@@ -1,0 +1,1307 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Poka-Yoke — Guia de Auto Treinamento | Biolab & CO.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet"/>
+<style>
+/* ===== RESET & BASE ===== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;}
+body{
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:clamp(15px,2.5vw,17px);
+  line-height:1.82;
+  color:#1a2540;
+  background:#f7f9fc;
+  -webkit-print-color-adjust:exact;
+  print-color-adjust:exact;
+  overflow-x:hidden;
+}
+
+/* ===== CSS CUSTOM PROPERTIES ===== */
+:root{
+  --navy:#08132a;
+  --blue:#0d47a1;
+  --blue-mid:#1565c0;
+  --cyan:#00c8d7;
+  --green:#2e7d32;
+  --amber:#e65100;
+  --red:#c62828;
+  --white:#ffffff;
+  --off-white:#f7f9fc;
+  --border:#e2e8f0;
+  --text-main:#1a2540;
+  --text-muted:#5a6a8a;
+  --radius:16px;
+  --shadow:0 2px 18px rgba(8,19,42,.09);
+  --shadow-md:0 6px 32px rgba(8,19,42,.13);
+}
+
+/* ===== KEYFRAMES ===== */
+@keyframes fadeDown{from{opacity:0;transform:translateY(-14px);}to{opacity:1;transform:translateY(0);}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.4;transform:scale(.7);}}
+@keyframes spinRing{to{transform:rotate(360deg);}}
+@keyframes popIn{0%{transform:scale(.5);opacity:0;}70%{transform:scale(1.1);}100%{transform:scale(1);opacity:1;}}
+@keyframes progressAnim{from{width:0;}to{width:var(--prog-w);}}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(0,200,215,.4);}70%{box-shadow:0 0 0 10px rgba(0,200,215,0);}}
+@keyframes countUp{from{opacity:0;transform:scale(.8);}to{opacity:1;transform:scale(1);}}
+@keyframes slideIn{from{opacity:0;transform:translateX(-20px);}to{opacity:1;transform:translateX(0);}}
+
+/* ===== TYPOGRAPHY ===== */
+h1,h2,h3,h4{font-family:'Syne',sans-serif;font-weight:800;line-height:1.2;color:var(--navy);}
+h1{font-size:clamp(2.1rem,7vw,3.8rem);}
+h2{font-size:clamp(1.5rem,4.5vw,2.4rem);}
+h3{font-size:clamp(1.15rem,3vw,1.55rem);}
+p{margin-bottom:1rem;}
+p:last-child{margin-bottom:0;}
+
+/* ===== LAYOUT HELPERS ===== */
+.section{padding:clamp(40px,8vw,80px) clamp(18px,5vw,48px);}
+.section--white{background:var(--white);}
+.section--off{background:var(--off-white);}
+.container{max-width:820px;margin:0 auto;}
+.module-label{
+  display:inline-block;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:clamp(.68rem,1.8vw,.78rem);
+  font-weight:700;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:var(--cyan);
+  background:rgba(0,200,215,.1);
+  border:1px solid rgba(0,200,215,.25);
+  padding:.32em .9em;
+  border-radius:40px;
+  margin-bottom:1.1rem;
+}
+.section-title{margin-bottom:.6rem;}
+.section-intro{color:var(--text-muted);font-size:clamp(.9rem,2.4vw,1.05rem);margin-bottom:clamp(24px,5vw,40px);max-width:640px;}
+
+/* ===== COVER ===== */
+.cover{
+  min-height:100svh;
+  background:var(--navy);
+  position:relative;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  padding:clamp(24px,6vw,60px) clamp(18px,5vw,40px);
+  -webkit-print-color-adjust:exact;
+  print-color-adjust:exact;
+}
+.cover::before{
+  content:'';
+  position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 70% 55% at 20% 30%, rgba(13,71,161,.55) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 50% at 80% 70%, rgba(0,200,215,.18) 0%, transparent 65%),
+    repeating-linear-gradient(
+      -45deg,
+      transparent,transparent 48px,
+      rgba(255,255,255,.018) 48px,rgba(255,255,255,.018) 50px
+    );
+  pointer-events:none;
+}
+.cover-ghost{
+  position:absolute;
+  font-family:'Syne',sans-serif;
+  font-weight:800;
+  font-size:clamp(6rem,22vw,18rem);
+  color:rgba(255,255,255,.03);
+  letter-spacing:-.02em;
+  line-height:1;
+  top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  white-space:nowrap;
+  pointer-events:none;
+  user-select:none;
+}
+.cover-inner{position:relative;z-index:2;width:100%;}
+.cover-badge{
+  display:inline-flex;align-items:center;gap:.5rem;
+  font-size:clamp(.68rem,2vw,.78rem);
+  font-weight:700;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:rgba(0,200,215,.9);
+  background:rgba(0,200,215,.1);
+  border:1px solid rgba(0,200,215,.3);
+  border-radius:40px;
+  padding:.42em 1.1em;
+  margin-bottom:clamp(16px,4vw,28px);
+  animation:fadeDown .7s ease both;
+}
+.cover-badge-dot{
+  width:7px;height:7px;
+  border-radius:50%;
+  background:var(--cyan);
+  flex-shrink:0;
+  animation:blink 1.6s ease-in-out infinite;
+}
+.cover-eyebrow{
+  font-size:clamp(.7rem,2vw,.8rem);
+  font-weight:600;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  color:rgba(255,255,255,.45);
+  margin-bottom:.7rem;
+  animation:fadeDown .8s .1s ease both;
+}
+.cover-title{
+  font-family:'Syne',sans-serif;
+  font-weight:800;
+  font-size:clamp(2.4rem,9vw,5.5rem);
+  line-height:1.08;
+  background:linear-gradient(135deg,#fff 0%,var(--cyan) 60%,#7af4ff 100%);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  margin-bottom:clamp(12px,3vw,20px);
+  animation:fadeUp .8s .2s ease both;
+}
+.cover-divider{
+  width:48px;height:3px;
+  background:linear-gradient(90deg,var(--cyan),var(--blue));
+  border-radius:2px;
+  margin:0 auto clamp(12px,3vw,22px);
+  animation:fadeUp .8s .3s ease both;
+}
+.cover-subtitle{
+  font-size:clamp(.9rem,2.6vw,1.15rem);
+  color:rgba(255,255,255,.65);
+  max-width:520px;
+  margin:0 auto clamp(28px,6vw,48px);
+  animation:fadeUp .8s .35s ease both;
+}
+.cover-stats{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:clamp(12px,3vw,24px);
+  animation:fadeUp .8s .45s ease both;
+}
+.cover-stat{
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:12px;
+  padding:clamp(10px,2.5vw,16px) clamp(16px,4vw,28px);
+  text-align:center;
+}
+.cover-stat-num{
+  font-family:'Syne',sans-serif;
+  font-weight:800;
+  font-size:clamp(1.5rem,4.5vw,2.2rem);
+  color:var(--cyan);
+  line-height:1;
+  display:block;
+}
+.cover-stat-label{
+  font-size:clamp(.65rem,1.8vw,.75rem);
+  font-weight:600;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  color:rgba(255,255,255,.45);
+  display:block;
+  margin-top:.25rem;
+}
+.cover-footer{
+  position:absolute;
+  bottom:clamp(16px,4vw,28px);
+  left:0;right:0;
+  font-size:clamp(.65rem,1.8vw,.75rem);
+  color:rgba(255,255,255,.25);
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+
+/* ===== CONTENT CARDS ===== */
+.card-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:clamp(10px,2.5vw,18px);
+  margin-top:clamp(20px,4vw,32px);
+}
+.card{
+  background:var(--white);
+  border-radius:var(--radius);
+  padding:clamp(16px,4vw,24px);
+  box-shadow:var(--shadow);
+  border:1px solid var(--border);
+  transition:transform .18s ease,box-shadow .18s ease;
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+}
+.section--white .card{background:var(--off-white);}
+.card:active{transform:scale(.97);}
+.card-icon{font-size:clamp(1.4rem,4vw,1.8rem);margin-bottom:.6rem;display:block;}
+.card-title{
+  font-family:'Syne',sans-serif;
+  font-weight:800;
+  font-size:clamp(.9rem,2.5vw,1.05rem);
+  margin-bottom:.35rem;
+  color:var(--navy);
+}
+.card-body{font-size:clamp(.78rem,2.2vw,.9rem);color:var(--text-muted);line-height:1.7;}
+
+/* Type-top cards (colored bar at top) */
+.card--top{border-top:4px solid;}
+.card--top.c-blue{border-top-color:var(--blue);}
+.card--top.c-cyan{border-top-color:var(--cyan);}
+.card--top.c-green{border-top-color:var(--green);}
+.card--top.c-amber{border-top-color:var(--amber);}
+
+/* Border-left cards */
+.card--left{border-left:4px solid;}
+.card--left.c-blue{border-left-color:var(--blue);}
+.card--left.c-cyan{border-left-color:var(--cyan);}
+.card--left.c-green{border-left-color:var(--green);}
+.card--left.c-amber{border-left-color:var(--amber);}
+.card--left{grid-column:1/-1;}
+
+/* Full-width single cards */
+.card--full{grid-column:1/-1;}
+
+/* ===== INFO BOX ===== */
+.info-box{
+  background:rgba(13,71,161,.06);
+  border:1px solid rgba(13,71,161,.18);
+  border-radius:var(--radius);
+  padding:clamp(18px,4vw,28px);
+  margin-top:clamp(20px,4vw,32px);
+}
+.info-box-title{
+  font-family:'Syne',sans-serif;
+  font-weight:800;
+  font-size:clamp(.88rem,2.4vw,1rem);
+  color:var(--blue);
+  margin-bottom:.8rem;
+  display:flex;align-items:center;gap:.5rem;
+}
+.info-box ul{padding-left:1.2rem;}
+.info-box li{font-size:clamp(.8rem,2.2vw,.92rem);color:var(--text-muted);margin-bottom:.5rem;line-height:1.7;}
+.info-box li:last-child{margin-bottom:0;}
+
+/* ===== BLOCKQUOTE ===== */
+.blockquote{
+  background:linear-gradient(135deg,rgba(0,200,215,.08) 0%,rgba(13,71,161,.08) 100%);
+  border-left:4px solid var(--cyan);
+  border-radius:0 var(--radius) var(--radius) 0;
+  padding:clamp(18px,4vw,28px) clamp(18px,4vw,28px);
+  margin:clamp(20px,4vw,32px) 0;
+  font-style:italic;
+  font-size:clamp(.95rem,2.6vw,1.1rem);
+  color:var(--navy);
+  line-height:1.75;
+}
+.blockquote cite{
+  display:block;
+  margin-top:.8rem;
+  font-style:normal;
+  font-size:clamp(.72rem,2vw,.82rem);
+  font-weight:700;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  color:var(--text-muted);
+}
+
+/* ===== TIMELINE (vertical) ===== */
+.timeline{
+  position:relative;
+  margin-top:clamp(20px,4vw,32px);
+  padding-left:clamp(36px,8vw,56px);
+}
+.timeline::before{
+  content:'';
+  position:absolute;
+  left:clamp(13px,3vw,19px);
+  top:0;bottom:0;
+  width:2px;
+  background:linear-gradient(180deg,var(--cyan),var(--blue));
+}
+.timeline-item{
+  position:relative;
+  margin-bottom:clamp(20px,4vw,32px);
+  animation:slideIn .5s ease both;
+}
+.timeline-item:last-child{margin-bottom:0;}
+.timeline-num{
+  position:absolute;
+  left:clamp(-36px,-8vw,-44px);
+  top:2px;
+  width:clamp(28px,6vw,36px);
+  height:clamp(28px,6vw,36px);
+  border-radius:50%;
+  background:linear-gradient(135deg,var(--blue),var(--cyan));
+  color:#fff;
+  font-family:'Syne',sans-serif;
+  font-weight:800;
+  font-size:clamp(.75rem,2vw,.88rem);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 2px 10px rgba(13,71,161,.35);
+  flex-shrink:0;
+}
+.timeline-title{
+  font-family:'Syne',sans-serif;
+  font-weight:800;
+  font-size:clamp(.95rem,2.6vw,1.1rem);
+  color:var(--navy);
+  margin-bottom:.35rem;
+}
+.timeline-body{font-size:clamp(.8rem,2.2vw,.92rem);color:var(--text-muted);line-height:1.7;}
+.timeline-tip{
+  margin-top:clamp(16px,3vw,24px);
+  font-size:clamp(.72rem,2vw,.82rem);
+  color:var(--text-muted);
+  font-style:italic;
+  border-top:1px solid var(--border);
+  padding-top:clamp(12px,2.5vw,18px);
+}
+
+/* ===== TABLE (Estudos de Caso) ===== */
+.table-wrap{
+  overflow-x:auto;
+  margin-top:clamp(20px,4vw,32px);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+}
+table{
+  width:100%;
+  border-collapse:collapse;
+  background:var(--white);
+  font-size:clamp(.75rem,2vw,.88rem);
+}
+.section--white table{background:var(--off-white);}
+thead{background:var(--navy);-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+thead th{
+  font-family:'Syne',sans-serif;
+  font-weight:800;
+  font-size:clamp(.68rem,1.8vw,.78rem);
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  color:rgba(255,255,255,.75);
+  padding:clamp(10px,2.5vw,16px) clamp(12px,3vw,20px);
+  text-align:left;
+}
+tbody tr{border-bottom:1px solid var(--border);}
+tbody tr:last-child{border-bottom:none;}
+tbody td{padding:clamp(10px,2.5vw,14px) clamp(12px,3vw,20px);line-height:1.65;color:var(--text-muted);}
+tbody td:first-child{font-weight:700;color:var(--navy);}
+.tag{
+  display:inline-block;
+  padding:.2em .65em;
+  border-radius:20px;
+  font-size:clamp(.62rem,1.6vw,.72rem);
+  font-weight:700;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+.tag--ctrl{background:rgba(46,125,50,.12);color:var(--green);}
+.tag--warn{background:rgba(230,81,0,.12);color:var(--amber);}
+
+/* ===== QUIZ ===== */
+.quiz-section{
+  background:var(--navy);
+  padding:clamp(40px,8vw,80px) clamp(18px,5vw,40px);
+  -webkit-print-color-adjust:exact;
+}
+.quiz-header{text-align:center;margin-bottom:clamp(28px,6vw,48px);}
+.quiz-label{
+  display:inline-block;
+  font-size:clamp(.68rem,1.8vw,.78rem);
+  font-weight:700;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--cyan);
+  background:rgba(0,200,215,.1);
+  border:1px solid rgba(0,200,215,.25);
+  border-radius:40px;
+  padding:.32em .9em;
+  margin-bottom:1rem;
+}
+.quiz-title{
+  font-family:'Syne',sans-serif;
+  font-weight:800;
+  font-size:clamp(1.6rem,5vw,2.6rem);
+  color:#fff;
+  margin-bottom:.6rem;
+}
+.quiz-instruction{
+  font-size:clamp(.82rem,2.3vw,.95rem);
+  color:rgba(255,255,255,.55);
+}
+.progress-wrap{
+  background:rgba(255,255,255,.1);
+  border-radius:40px;
+  height:8px;
+  margin-bottom:.6rem;
+  overflow:hidden;
+}
+.progress-bar{
+  height:100%;
+  border-radius:40px;
+  background:linear-gradient(90deg,var(--blue),var(--cyan));
+  transition:width .4s cubic-bezier(.4,0,.2,1);
+}
+.progress-info{
+  display:flex;justify-content:space-between;
+  font-size:clamp(.68rem,1.8vw,.78rem);
+  color:rgba(255,255,255,.45);
+  margin-bottom:clamp(20px,4vw,32px);
+}
+.question-card{
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:var(--radius);
+  padding:clamp(20px,5vw,32px);
+  animation:fadeUp .4s ease;
+}
+.q-number{
+  font-size:clamp(.68rem,1.8vw,.78rem);
+  font-weight:700;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--cyan);
+  margin-bottom:.6rem;
+}
+.q-text{
+  font-family:'Syne',sans-serif;
+  font-weight:800;
+  font-size:clamp(1rem,2.8vw,1.25rem);
+  color:#fff;
+  line-height:1.45;
+  margin-bottom:clamp(16px,4vw,24px);
+}
+.options{display:flex;flex-direction:column;gap:clamp(8px,2vw,12px);}
+.option{
+  background:rgba(255,255,255,.07);
+  border:1.5px solid rgba(255,255,255,.14);
+  border-radius:12px;
+  padding:clamp(12px,3vw,18px) clamp(14px,3.5vw,20px);
+  font-size:clamp(.82rem,2.3vw,.95rem);
+  color:rgba(255,255,255,.85);
+  cursor:pointer;
+  text-align:left;
+  transition:background .18s,border-color .18s,transform .12s;
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+  line-height:1.55;
+}
+.option:active{transform:scale(.97);}
+.option:hover:not(:disabled){background:rgba(255,255,255,.12);border-color:rgba(0,200,215,.4);}
+.option.correct{background:rgba(46,125,50,.25);border-color:#66bb6a;color:#a5d6a7;}
+.option.wrong{background:rgba(198,40,40,.25);border-color:#ef5350;color:#ef9a9a;}
+.option:disabled{cursor:not-allowed;}
+.feedback-box{
+  display:none;
+  margin-top:clamp(14px,3vw,20px);
+  padding:clamp(12px,3vw,18px);
+  background:rgba(0,200,215,.08);
+  border:1px solid rgba(0,200,215,.2);
+  border-radius:10px;
+  font-size:clamp(.8rem,2.2vw,.92rem);
+  color:rgba(255,255,255,.8);
+  line-height:1.7;
+  animation:fadeUp .3s ease;
+}
+.feedback-box.show{display:block;}
+.btn-next{
+  display:none;
+  margin-top:clamp(16px,4vw,24px);
+  width:100%;
+  padding:clamp(13px,3vw,17px) 24px;
+  background:linear-gradient(135deg,var(--blue),var(--blue-mid));
+  color:#fff;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-weight:700;
+  font-size:clamp(.88rem,2.4vw,1rem);
+  border:none;
+  border-radius:12px;
+  cursor:pointer;
+  transition:opacity .18s,transform .12s;
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+}
+.btn-next:active{transform:scale(.97);}
+.btn-next.show{display:block;}
+.btn-next--final{background:linear-gradient(135deg,var(--green),#388e3c);}
+
+/* ===== CONCLUSION ===== */
+.conclusion{
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  background:var(--navy);
+  overflow-y:auto;
+  -webkit-print-color-adjust:exact;
+}
+.conclusion.active{display:block;}
+.conclusion-canvas{
+  position:fixed;
+  top:0;left:0;
+  width:100%;height:100%;
+  pointer-events:none;
+  z-index:0;
+}
+.conclusion-inner{
+  position:relative;
+  z-index:1;
+  min-height:100svh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:clamp(40px,8vw,80px) clamp(18px,5vw,40px);
+  text-align:center;
+}
+.score-ring-wrap{
+  position:relative;
+  width:clamp(130px,30vw,170px);
+  height:clamp(130px,30vw,170px);
+  margin:0 auto clamp(24px,5vw,36px);
+}
+.score-ring{
+  position:absolute;inset:0;
+  border-radius:50%;
+  background:conic-gradient(var(--cyan) 0%,var(--blue) 50%,var(--cyan) 100%);
+  animation:spinRing 2.5s linear infinite;
+}
+.score-ring-inner{
+  position:absolute;
+  inset:8px;
+  border-radius:50%;
+  background:var(--navy);
+  display:flex;align-items:center;justify-content:center;
+  font-size:clamp(2.6rem,8vw,4rem);
+  animation:popIn .6s .3s ease both;
+}
+.conclusion-score{
+  font-family:'Syne',sans-serif;
+  font-weight:800;
+  font-size:clamp(2.8rem,9vw,5rem);
+  color:var(--cyan);
+  line-height:1;
+  margin-bottom:.3rem;
+  animation:countUp .6s .2s ease both;
+}
+.conclusion-title{
+  font-family:'Syne',sans-serif;
+  font-weight:800;
+  font-size:clamp(1.5rem,5vw,2.5rem);
+  color:#fff;
+  margin-bottom:.6rem;
+  animation:fadeUp .6s .3s ease both;
+}
+.conclusion-msg{
+  font-size:clamp(.88rem,2.4vw,1.05rem);
+  color:rgba(255,255,255,.65);
+  max-width:520px;
+  margin:0 auto clamp(20px,4vw,32px);
+  animation:fadeUp .6s .4s ease both;
+  line-height:1.75;
+}
+.badges{
+  display:flex;flex-wrap:wrap;justify-content:center;
+  gap:clamp(8px,2vw,12px);
+  margin-bottom:clamp(24px,5vw,40px);
+  animation:fadeUp .6s .5s ease both;
+}
+.badge{
+  display:inline-flex;align-items:center;gap:.45rem;
+  background:rgba(255,255,255,.07);
+  border:1px solid rgba(255,255,255,.14);
+  border-radius:40px;
+  padding:.38em 1em;
+  font-size:clamp(.7rem,2vw,.82rem);
+  font-weight:700;
+  color:rgba(255,255,255,.8);
+}
+.badge-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.btn-retry{
+  padding:clamp(14px,3vw,18px) clamp(32px,7vw,48px);
+  background:linear-gradient(135deg,var(--blue),var(--cyan));
+  color:#fff;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-weight:700;
+  font-size:clamp(.9rem,2.5vw,1.05rem);
+  border:none;
+  border-radius:12px;
+  cursor:pointer;
+  transition:opacity .18s,transform .12s;
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+  animation:fadeUp .6s .6s ease both;
+  animation-fill-mode:both;
+}
+.btn-retry:active{transform:scale(.97);}
+
+/* ===== FOOTER ===== */
+.site-footer{
+  background:var(--navy);
+  padding:clamp(20px,4vw,32px) clamp(18px,5vw,40px);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:12px;
+  -webkit-print-color-adjust:exact;
+  print-color-adjust:exact;
+}
+.footer-brand{
+  font-family:'Syne',sans-serif;
+  font-weight:800;
+  font-size:clamp(.88rem,2.4vw,1.05rem);
+  color:rgba(255,255,255,.7);
+}
+.footer-credit{
+  font-size:clamp(.68rem,1.8vw,.78rem);
+  color:rgba(255,255,255,.3);
+}
+
+/* ===== PRINT ===== */
+@media print{
+  .quiz-section,.conclusion{display:none !important;}
+  .cover,.site-footer{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  @page{margin:0;size:A4;}
+  body{background:#fff;}
+}
+</style>
+</head>
+<body>
+
+<!-- ===== COVER ===== -->
+<section class="cover" aria-label="Capa do Treinamento">
+  <div class="cover-ghost">POKA-YOKE</div>
+  <div class="cover-inner">
+    <span class="cover-badge">
+      <span class="cover-badge-dot"></span>
+      Auto Treinamento Interativo
+    </span>
+    <p class="cover-eyebrow">Biolab &amp; CO. — Excelência Operacional</p>
+    <h1 class="cover-title">Poka-Yoke</h1>
+    <div class="cover-divider"></div>
+    <p class="cover-subtitle">Aprenda a construir sistemas à prova de erros humanos — e leve propostas concretas para a sua área.</p>
+    <div class="cover-stats">
+      <div class="cover-stat">
+        <span class="cover-stat-num">4</span>
+        <span class="cover-stat-label">Módulos</span>
+      </div>
+      <div class="cover-stat">
+        <span class="cover-stat-num">2</span>
+        <span class="cover-stat-label">Abordagens</span>
+      </div>
+      <div class="cover-stat">
+        <span class="cover-stat-num">10</span>
+        <span class="cover-stat-label">Questões</span>
+      </div>
+    </div>
+  </div>
+  <p class="cover-footer">Role para começar ↓</p>
+</section>
+
+<!-- ===== MÓDULO 1 ===== -->
+<section class="section section--off" id="modulo1">
+  <div class="container">
+    <span class="module-label">Módulo 01 — Conceito Fundamental</span>
+    <h2 class="section-title">🧠 O que é Poka-Yoke?</h2>
+    <p class="section-intro">Antes de entender a solução, precisamos entender o problema: erros humanos são inevitáveis — mas suas consequências, não.</p>
+
+    <p>Quem nunca enviou um e-mail sem o anexo prometido? Ou tentou encaixar um cabo USB na orientação errada — da primeira vez? Esses pequenos deslizes acontecem com todos nós, independentemente de experiência ou atenção.</p>
+    <p>O <strong>Poka-Yoke</strong> (em japonês: <em>poka</em> = erro não intencional; <em>yokeru</em> = evitar) é qualquer mecanismo em um processo que ajuda o operador — ou qualquer pessoa — a evitar erros antes que eles aconteçam ou causem impacto real.</p>
+
+    <div class="card-grid">
+      <div class="card card--top c-blue">
+        <span class="card-icon">🇯🇵</span>
+        <div class="card-title">Origem</div>
+        <div class="card-body">Desenvolvido por Shigeo Shingo no Sistema Toyota de Produção, nos anos 1960. A filosofia nasceu para eliminar defeitos no chão de fábrica.</div>
+      </div>
+      <div class="card card--top c-cyan">
+        <span class="card-icon">🌐</span>
+        <div class="card-title">Alcance Universal</div>
+        <div class="card-body">Hoje vai muito além das fábricas: escritórios, hospitais, bancos, softwares e até a farmácia da sua cidade usam Poka-Yokes diariamente.</div>
+      </div>
+    </div>
+
+    <div class="blockquote">
+      "Poka-Yoke não busca punir quem erra — busca consertar o processo que <em>permitiu</em> o erro acontecer. O foco é no sistema, não no indivíduo."
+      <cite>— Shigeo Shingo, criador do conceito</cite>
+    </div>
+
+    <div class="info-box">
+      <div class="info-box-title">💡 A Mudança de Mentalidade</div>
+      <ul>
+        <li><strong>Antes:</strong> "Quem errou deve ser mais cuidadoso."</li>
+        <li><strong>Depois:</strong> "Por que o processo permitiu que esse erro ocorresse?"</li>
+        <li>Um bom Poka-Yoke torna o erro <strong>impossível</strong> de acontecer — ou imediatamente visível.</li>
+        <li>O resultado? Menos retrabalho, menos acidentes, mais qualidade e uma equipe que confia no processo.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ===== MÓDULO 2 ===== -->
+<section class="section section--white" id="modulo2">
+  <div class="container">
+    <span class="module-label">Módulo 02 — Tipos e Abordagens</span>
+    <h2 class="section-title">🔀 Tipos de Poka-Yoke</h2>
+    <p class="section-intro">Existem duas grandes abordagens para lidar com falhas humanas. Entender qual usar em cada situação é o primeiro passo para propor soluções eficazes.</p>
+
+    <div class="card-grid">
+      <div class="card card--top c-green" style="grid-column:1/-1;">
+        <span class="card-icon">🚫</span>
+        <div class="card-title">Poka-Yoke de Controle (Prevenção)</div>
+        <div class="card-body">
+          Impede física ou sistemicamente que o erro aconteça. O processo <strong>simplesmente não avança</strong> se algo estiver errado. É a abordagem mais robusta: o erro se torna impossível.<br><br>
+          <strong>Exemplos físicos:</strong> encaixe de peças com formato único, pinos-guia que impedem montagem invertida.<br>
+          <strong>Exemplos digitais:</strong> campo obrigatório (*) que bloqueia o envio do formulário, confirmação de exclusão de dados.
+        </div>
+      </div>
+      <div class="card card--top c-amber" style="grid-column:1/-1;">
+        <span class="card-icon">⚠️</span>
+        <div class="card-title">Poka-Yoke de Advertência (Detecção)</div>
+        <div class="card-body">
+          Emite um sinal — luz, som, cor, pop-up — avisando que um erro ocorreu <strong>ou está prestes a ocorrer</strong>. Exige atenção imediata, mas ainda depende de uma ação humana.<br><br>
+          <strong>Exemplos físicos:</strong> lâmpada que acende quando uma etapa é pulada, alarme sonoro em equipamento fora do parâmetro.<br>
+          <strong>Exemplos digitais:</strong> alerta "Você escreveu 'anexo' mas não há arquivos", medidor de força de senha.
+        </div>
+      </div>
+    </div>
+
+    <div class="card-grid" style="margin-top:clamp(16px,4vw,24px);">
+      <div class="card card--left c-green">
+        <div class="card-title">✅ Quando usar Controle</div>
+        <div class="card-body">Quando o custo do erro é alto (segurança do paciente, perdas financeiras graves, acidentes de trabalho). A prevenção sempre vale o investimento.</div>
+      </div>
+      <div class="card card--left c-amber">
+        <div class="card-title">🔔 Quando usar Advertência</div>
+        <div class="card-body">Quando o controle total não é viável ou implicaria alto custo. Um aviso bem posicionado já reduz drasticamente a ocorrência de erros.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== MÓDULO 3 ===== -->
+<section class="section section--off" id="modulo3">
+  <div class="container">
+    <span class="module-label">Módulo 03 — Estudos de Caso</span>
+    <h2 class="section-title">🔬 Poka-Yoke na Prática</h2>
+    <p class="section-intro">O Poka-Yoke não vive só no chão de fábrica. Ele se adapta a qualquer ambiente de trabalho. Veja como diferentes setores já aplicam esses mecanismos.</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Setor</th>
+            <th>Exemplo de Aplicação</th>
+            <th>Tipo</th>
+            <th>Benefício</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>💊 Farmacêutico</td>
+            <td>Leitura obrigatória de código de barras antes da mistura de princípios ativos</td>
+            <td><span class="tag tag--ctrl">Controle</span></td>
+            <td>Evita troca de fórmulas e garante segurança do paciente</td>
+          </tr>
+          <tr>
+            <td>💊 Farmacêutico</td>
+            <td>Encaixes com formatos únicos para gases medicinais (oxigênio vs. nitrogênio)</td>
+            <td><span class="tag tag--ctrl">Controle</span></td>
+            <td>Impede conexão de cilindros errados em equipamentos vitais</td>
+          </tr>
+          <tr>
+            <td>🏢 Escritório</td>
+            <td>Formulários com campos obrigatórios (*) que bloqueiam o envio</td>
+            <td><span class="tag tag--ctrl">Controle</span></td>
+            <td>Impede envio de pedidos incompletos ao departamento financeiro</td>
+          </tr>
+          <tr>
+            <td>🏢 Escritório</td>
+            <td>Gestão Visual com etiquetas por cores em pastas e arquivos</td>
+            <td><span class="tag tag--warn">Advertência</span></td>
+            <td>Permite notar instantaneamente se uma pasta está no lugar errado</td>
+          </tr>
+          <tr>
+            <td>💻 Digital</td>
+            <td>Alerta do Gmail: "Você escreveu 'anexo', mas nenhum arquivo foi anexado"</td>
+            <td><span class="tag tag--warn">Advertência</span></td>
+            <td>Previne retrabalho e desgaste na comunicação profissional</td>
+          </tr>
+          <tr>
+            <td>💻 Digital</td>
+            <td>Medidor visual de "Força da Senha" no cadastro de sistemas</td>
+            <td><span class="tag tag--warn">Advertência</span></td>
+            <td>Induz o usuário a criar credenciais mais seguras contra ataques</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card-grid" style="margin-top:clamp(20px,4vw,32px);">
+      <div class="card card--left c-cyan">
+        <div class="card-title">🔌 Exemplo Cotidiano: Cabo USB</div>
+        <div class="card-body">O conector USB-C foi um Poka-Yoke de Controle: ele é simétrico e entra dos dois lados. O USB-A antigo causava frustração porque permitia o encaixe invertido — a solução foi eliminar o erro tornando-o impossível.</div>
+      </div>
+      <div class="card card--left c-blue">
+        <div class="card-title">🚗 Exemplo Cotidiano: Cinto de Segurança</div>
+        <div class="card-body">O aviso sonoro que toca quando você não coloca o cinto é um clássico Poka-Yoke de Advertência: o carro não impede que você dirija sem cinto, mas torna o erro impossível de ignorar.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== MÓDULO 4 ===== -->
+<section class="section section--white" id="modulo4">
+  <div class="container">
+    <span class="module-label">Módulo 04 — Guia de Implementação</span>
+    <h2 class="section-title">🛠️ Como Implementar (Passo a Passo)</h2>
+    <p class="section-intro">Agora que você entende o conceito, veja como sair do zero e implementar um Poka-Yoke real na sua área.</p>
+
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-num">1</div>
+        <div class="timeline-title">🔍 Identificar a Falha</div>
+        <div class="timeline-body">Analise o processo atual e mapeie onde erros humanos mais acontecem. Use relatórios de não-conformidade, registros de retrabalho ou simplesmente pergunte à equipe: "Onde as coisas costumam dar errado aqui?"</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-num">2</div>
+        <div class="timeline-title">🤔 Descobrir a Causa Raiz</div>
+        <div class="timeline-body">Não resolva o sintoma — resolva a causa. Utilize a técnica dos <strong>5 Porquês</strong>: pergunte "por quê?" cinco vezes consecutivas até chegar ao motivo central do erro. Sem essa etapa, sua solução pode resolver o problema errado.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-num">3</div>
+        <div class="timeline-title">💡 Projetar a Solução</div>
+        <div class="timeline-body">Pense na solução mais <strong>simples, barata e eficaz</strong>. Um bom Poka-Yoke não exige investimento alto nem burocracia nova. Uma etiqueta de cor, um campo obrigatório no sistema ou um encaixe físico podem ser suficientes.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-num">4</div>
+        <div class="timeline-title">🧪 Testar o Mecanismo</div>
+        <div class="timeline-body">Implemente a solução em <strong>pequena escala</strong> e tente forçar o erro deliberadamente: o mecanismo resistiu? Ajuste antes de escalar. Essa etapa evita que a solução crie novos problemas.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-num">5</div>
+        <div class="timeline-title">📋 Padronizar e Treinar</div>
+        <div class="timeline-body">Documente o novo processo em um POP (Procedimento Operacional Padrão) e instrua todos os envolvidos. Um Poka-Yoke que só a equipe que o criou conhece não funciona por muito tempo.</div>
+      </div>
+      <div class="timeline-tip">
+        💬 <strong>Dica:</strong> Comece pequeno. Escolha <em>um</em> processo na sua área onde erros são frequentes e proponha um único mecanismo simples. O impacto acumulado de muitos pequenos Poka-Yokes é transformador.
+      </div>
+    </div>
+
+    <div class="blockquote" style="margin-top:clamp(24px,5vw,40px);">
+      "Um processo bem desenhado não depende de heróis. Ele funciona igualmente bem com qualquer membro da equipe — do mais experiente ao mais recente."
+      <cite>— Princípio da Melhoria Contínua</cite>
+    </div>
+  </div>
+</section>
+
+<!-- ===== QUIZ ===== -->
+<section class="quiz-section" id="quiz" aria-label="Quiz de Verificação">
+  <div class="container">
+    <div class="quiz-header">
+      <span class="quiz-label">Verificação de Aprendizado</span>
+      <h2 class="quiz-title">Quiz Interativo</h2>
+      <p class="quiz-instruction">Responda às questões e veja seu resultado ao final. Cada resposta traz um feedback educativo.</p>
+    </div>
+
+    <div class="progress-wrap">
+      <div class="progress-bar" id="progressBar" style="width:0%"></div>
+    </div>
+    <div class="progress-info">
+      <span id="progressLabel">Questão 1 de 10</span>
+      <span id="progressPct">0%</span>
+    </div>
+
+    <div id="questionCard" class="question-card">
+      <div class="q-number" id="qNumber">Questão 01</div>
+      <div class="q-text" id="qText"></div>
+      <div class="options" id="optionsContainer"></div>
+      <div class="feedback-box" id="feedbackBox"></div>
+      <button class="btn-next" id="btnNext" onclick="nextQuestion()">Próxima →</button>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CONCLUSION ===== -->
+<div class="conclusion" id="conclusion" aria-label="Tela de Conclusão">
+  <canvas class="conclusion-canvas" id="confettiCanvas"></canvas>
+  <div class="conclusion-inner">
+    <div class="score-ring-wrap">
+      <div class="score-ring"></div>
+      <div class="score-ring-inner" id="conclusionEmoji">🏆</div>
+    </div>
+    <div class="conclusion-score" id="conclusionScore">0/10</div>
+    <h2 class="conclusion-title" id="conclusionTitle">Parabéns!</h2>
+    <p class="conclusion-msg" id="conclusionMsg"></p>
+    <div class="badges" id="conclusionBadges"></div>
+    <button class="btn-retry" onclick="retryQuiz()">🔄 Refazer o Quiz</button>
+  </div>
+</div>
+
+<!-- ===== FOOTER ===== -->
+<footer class="site-footer">
+  <span class="footer-brand">Biolab &amp; CO.</span>
+  <span class="footer-credit">Material de Auto Treinamento — Excelência Operacional</span>
+</footer>
+
+<script>
+/* ===========================
+   QUIZ DATA
+=========================== */
+const questions = [
+  {
+    text: "Uma operadora da linha de produção costuma confundir dois frascos de princípios ativos com embalagens semelhantes. Qual solução Poka-Yoke resolve isso de forma mais eficaz?",
+    options: [
+      "Treinar a operadora mais frequentemente sobre os produtos",
+      "Instalar um leitor de código de barras que trava o processo até a leitura correta ser confirmada",
+      "Colocar um aviso escrito na bancada de trabalho",
+      "Aumentar a iluminação da área"
+    ],
+    correct: 1,
+    feedback: "Correto! O leitor de código de barras é um Poka-Yoke de Controle: ele impede fisicamente que o processo avance com o produto errado. Treinamentos e avisos escritos dependem da atenção humana e são menos confiáveis — eles não eliminam a possibilidade do erro, apenas reduzem."
+  },
+  {
+    text: "O termo japonês 'Poka-Yoke' significa literalmente:",
+    options: [
+      "Trabalho sem desperdício",
+      "Melhoria contínua",
+      "Evitar erros não intencionais",
+      "Sistema à prova de falhas mecânicas"
+    ],
+    correct: 2,
+    feedback: "Exato! 'Poka' significa erro não intencional (um lapso, um descuido) e 'yokeru' significa evitar. O Poka-Yoke não trata de erros de sabotagem ou negligência grave — trata dos pequenos deslizes do dia a dia, que são absolutamente humanos e inevitáveis."
+  },
+  {
+    text: "Qual é a PRINCIPAL diferença entre um Poka-Yoke de Controle e um de Advertência?",
+    options: [
+      "O de Controle é mais caro e o de Advertência é mais barato",
+      "O de Controle impede o erro de acontecer; o de Advertência sinaliza quando ele ocorre",
+      "O de Controle é usado em fábricas e o de Advertência em escritórios",
+      "O de Controle usa tecnologia digital e o de Advertência usa métodos físicos"
+    ],
+    correct: 1,
+    feedback: "Perfeito! Essa é a distinção central. O Controle é preventivo: o processo simplesmente não avança. A Advertência é reativa: ela sinaliza o problema, mas ainda depende de uma ação humana para corrigi-lo. O custo e o ambiente de uso não definem o tipo — é a natureza da intervenção que importa."
+  },
+  {
+    text: "O alerta do Gmail — 'Você escreveu a palavra anexo, mas não há arquivos anexados' — é um exemplo de:",
+    options: [
+      "Poka-Yoke de Controle, pois impede o envio",
+      "Poka-Yoke de Advertência, pois avisa sem bloquear o envio",
+      "Gestão Visual aplicada ao ambiente digital",
+      "Um procedimento operacional padrão (POP)"
+    ],
+    correct: 1,
+    feedback: "Correto! O Gmail avisa, mas não bloqueia. Você pode ignorar o aviso e enviar assim mesmo — o que caracteriza a Advertência. Se o sistema bloqueasse o envio até um arquivo ser anexado, seria um Poka-Yoke de Controle. Perceba que ambos têm valor, mas o Controle elimina o erro enquanto a Advertência apenas o sinaliza."
+  },
+  {
+    text: "Ao implementar um Poka-Yoke, qual deve ser o PRIMEIRO passo?",
+    options: [
+      "Comprar equipamentos de detecção de falhas",
+      "Apresentar a proposta para a liderança",
+      "Identificar onde os erros humanos mais acontecem no processo atual",
+      "Criar um treinamento para a equipe sobre os erros comuns"
+    ],
+    correct: 2,
+    feedback: "Isso mesmo! Sem mapear onde os erros ocorrem, qualquer solução pode resolver o problema errado. O diagnóstico preciso — usando relatórios de não-conformidade, feedback da equipe ou observação direta — é o alicerce de todo o processo. Só então se parte para a análise da causa raiz e o projeto da solução."
+  },
+  {
+    text: "A filosofia por trás do Poka-Yoke defende que, quando um erro acontece repetidamente, a culpa é:",
+    options: [
+      "Do colaborador, que precisa de mais treinamento ou substituição",
+      "Da falta de punição adequada para quem erra",
+      "Do processo, que não foi desenhado para prevenir esse tipo de falha",
+      "Da falta de tecnologia na empresa"
+    ],
+    correct: 2,
+    feedback: "Exatamente! Essa é a mudança de mentalidade central do Poka-Yoke. Se um erro acontece uma vez, pode ser acaso. Se acontece repetidamente, é sinal de que o processo permite que ele aconteça. A solução não é punir pessoas — é redesenhar o processo para que o erro se torne impossível ou imediatamente visível."
+  },
+  {
+    text: "Um conector USB-C, que pode ser inserido em qualquer orientação (ao contrário do USB-A antigo), é um exemplo clássico de:",
+    options: [
+      "Poka-Yoke de Advertência no design de produto",
+      "Poka-Yoke de Controle no design de produto",
+      "Gestão Visual aplicada à eletrônica",
+      "Melhoria de ergonomia, não de Poka-Yoke"
+    ],
+    correct: 1,
+    feedback: "Correto! O USB-C tornou fisicamente impossível inserir o conector de forma errada — é um Poka-Yoke de Controle perfeito. Antes, o USB-A causava frustração constante porque o design permitia o erro. A solução não foi instruir os usuários a 'prestar mais atenção', foi eliminar a possibilidade do erro pelo design."
+  },
+  {
+    text: "Para entender a CAUSA RAIZ de um erro antes de projetar um Poka-Yoke, qual técnica é recomendada?",
+    options: [
+      "Diagrama de Gantt",
+      "Técnica dos 5 Porquês",
+      "Análise SWOT",
+      "Ciclo PDCA"
+    ],
+    correct: 1,
+    feedback: "Muito bem! Os '5 Porquês' é uma técnica simples e poderosa: perguntamos 'por quê?' de forma encadeada até chegar ao motivo central — não ao sintoma. Por exemplo: Erro na etiqueta → Por quê? Confusão entre produtos similares → Por quê? Embalagens idênticas → Por quê? Falta de diferenciação visual → Esta é a causa raiz que o Poka-Yoke deve resolver."
+  },
+  {
+    text: "Qual das alternativas a seguir descreve corretamente um Poka-Yoke de Controle no ambiente de escritório?",
+    options: [
+      "Pastas coloridas que permitem identificar rapidamente um arquivo fora do lugar",
+      "Um formulário digital que bloqueia o envio se campos obrigatórios estiverem vazios",
+      "Um e-mail de lembrete enviado automaticamente antes do prazo de entrega",
+      "Um treinamento presencial sobre preenchimento correto de documentos"
+    ],
+    correct: 1,
+    feedback: "Perfeito! O formulário que bloqueia o envio é Controle — o processo não avança enquanto o erro existir. As pastas coloridas são Advertência (você vê que algo está errado, mas o arquivo não 'volta sozinho'). O e-mail de lembrete é uma notificação preventiva, e o treinamento não é um Poka-Yoke — é uma ferramenta de capacitação."
+  },
+  {
+    text: "Após implementar um Poka-Yoke, qual é o passo FINAL e essencial para garantir sua efetividade a longo prazo?",
+    options: [
+      "Comunicar o resultado para a diretoria como melhoria de processo",
+      "Documentar o novo processo e treinar todos os envolvidos",
+      "Eliminar o Poka-Yoke após confirmar que os erros diminuíram",
+      "Aguardar 6 meses para avaliar se a solução funcionou antes de qualquer documentação"
+    ],
+    correct: 1,
+    feedback: "Exato! Um Poka-Yoke que apenas a equipe que o criou conhece não funciona por muito tempo. Documentar em um Procedimento Operacional Padrão (POP) e treinar todos os envolvidos garante que o mecanismo seja respeitado por novos colaboradores, turnos diferentes e em situações de substituição — transformando a melhoria em um padrão duradouro."
+  }
+];
+
+/* ===========================
+   QUIZ STATE
+=========================== */
+let currentQ = 0;
+let score = 0;
+let answered = false;
+
+/* ===========================
+   INIT
+=========================== */
+function loadQuestion(idx) {
+  const q = questions[idx];
+  answered = false;
+
+  document.getElementById('qNumber').textContent = `Questão ${String(idx+1).padStart(2,'0')}`;
+  document.getElementById('qText').textContent = q.text;
+
+  const pct = Math.round((idx / questions.length) * 100);
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = `Questão ${idx+1} de ${questions.length}`;
+  document.getElementById('progressPct').textContent = pct + '%';
+
+  const container = document.getElementById('optionsContainer');
+  container.innerHTML = '';
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option';
+    btn.textContent = opt;
+    btn.onclick = () => selectAnswer(i);
+    container.appendChild(btn);
+  });
+
+  const fb = document.getElementById('feedbackBox');
+  fb.className = 'feedback-box';
+  fb.textContent = '';
+
+  const btnNext = document.getElementById('btnNext');
+  btnNext.className = 'btn-next';
+  btnNext.textContent = idx < questions.length - 1 ? 'Próxima →' : 'Ver Resultado ✓';
+  btnNext.classList.remove('btn-next--final');
+  if (idx === questions.length - 1) btnNext.classList.add('btn-next--final');
+
+  // Animate card
+  const card = document.getElementById('questionCard');
+  card.style.animation = 'none';
+  card.offsetHeight; // reflow
+  card.style.animation = 'fadeUp .4s ease';
+}
+
+function selectAnswer(selectedIdx) {
+  if (answered) return;
+  answered = true;
+
+  const q = questions[currentQ];
+  const options = document.querySelectorAll('.option');
+
+  options.forEach((btn, i) => {
+    btn.disabled = true;
+    if (i === q.correct) btn.classList.add('correct');
+    else if (i === selectedIdx && i !== q.correct) btn.classList.add('wrong');
+  });
+
+  if (selectedIdx === q.correct) score++;
+
+  const fb = document.getElementById('feedbackBox');
+  fb.textContent = q.feedback;
+  fb.classList.add('show');
+
+  document.getElementById('btnNext').classList.add('show');
+}
+
+function nextQuestion() {
+  currentQ++;
+  if (currentQ >= questions.length) {
+    showConclusion();
+    return;
+  }
+  loadQuestion(currentQ);
+  document.getElementById('questionCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/* ===========================
+   CONCLUSION
+=========================== */
+function showConclusion() {
+  const el = document.getElementById('conclusion');
+  el.classList.add('active');
+  document.body.style.overflow = 'hidden';
+
+  // Emoji
+  let emoji, title, msg, badges;
+  if (score === 10) {
+    emoji = '🥇'; title = 'Desempenho Perfeito!';
+    msg = 'Você dominou todos os conceitos de Poka-Yoke. Está mais do que preparado para identificar oportunidades de melhoria e propor mecanismos concretos na sua área.';
+    badges = [
+      { label: 'Pontuação Máxima', color: '#ffd700' },
+      { label: 'Expert em Poka-Yoke', color: '#00c8d7' },
+      { label: 'Pronto para Liderar', color: '#2e7d32' }
+    ];
+  } else if (score >= 8) {
+    emoji = '🏆'; title = 'Excelente Resultado!';
+    msg = 'Você compreende profundamente o Poka-Yoke. Com esse nível de conhecimento, você tem tudo para propor soluções eficazes no seu ambiente de trabalho.';
+    badges = [
+      { label: 'Alto Desempenho', color: '#00c8d7' },
+      { label: 'Analista Poka-Yoke', color: '#0d47a1' }
+    ];
+  } else if (score >= 6) {
+    emoji = '👍'; title = 'Bom Trabalho!';
+    msg = 'Você tem uma boa base sobre Poka-Yoke. Revise os módulos onde teve dúvidas e refaça o quiz — cada questão traz feedback educativo valioso.';
+    badges = [
+      { label: 'Conhecimento Sólido', color: '#e65100' }
+    ];
+  } else {
+    emoji = '🔄'; title = 'Continue Aprendendo!';
+    msg = 'O Poka-Yoke é um conceito que ficará mais claro com a prática. Releia os módulos com calma, anote exemplos do seu dia a dia e refaça o quiz.';
+    badges = [
+      { label: 'Em Desenvolvimento', color: '#5a6a8a' }
+    ];
+  }
+
+  document.getElementById('conclusionEmoji').textContent = emoji;
+  document.getElementById('conclusionTitle').textContent = title;
+  document.getElementById('conclusionMsg').textContent = msg;
+
+  const badgesEl = document.getElementById('conclusionBadges');
+  badgesEl.innerHTML = badges.map(b =>
+    `<span class="badge"><span class="badge-dot" style="background:${b.color}"></span>${b.label}</span>`
+  ).join('');
+
+  // Animate score counter
+  const scoreEl = document.getElementById('conclusionScore');
+  let cur = 0;
+  const target = score;
+  const dur = 900;
+  const start = performance.now();
+  function animScore(now) {
+    const elapsed = now - start;
+    const progress = Math.min(elapsed / dur, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    cur = Math.round(eased * target);
+    scoreEl.textContent = `${cur}/10`;
+    if (progress < 1) requestAnimationFrame(animScore);
+  }
+  requestAnimationFrame(animScore);
+
+  // Confetti
+  startConfetti();
+  setTimeout(() => stopConfetti(), 5500);
+}
+
+function retryQuiz() {
+  currentQ = 0;
+  score = 0;
+  answered = false;
+
+  const el = document.getElementById('conclusion');
+  el.classList.remove('active');
+  document.body.style.overflow = '';
+
+  loadQuestion(0);
+  document.getElementById('quiz').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/* ===========================
+   CONFETTI
+=========================== */
+let confettiAnimId = null;
+let confettiRunning = false;
+const COLORS = ['#00c8d7','#0d47a1','#2e7d32','#e65100','#ffffff','#7af4ff','#ffcc02'];
+
+function startConfetti() {
+  const canvas = document.getElementById('confettiCanvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const particles = Array.from({length: 90}, () => ({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height - canvas.height,
+    w: Math.random() * 8 + 5,
+    h: Math.random() * 4 + 3,
+    color: COLORS[Math.floor(Math.random() * COLORS.length)],
+    vx: (Math.random() - 0.5) * 2.5,
+    vy: Math.random() * 3 + 1.5,
+    angle: Math.random() * 360,
+    va: (Math.random() - 0.5) * 6
+  }));
+
+  let frame = 0;
+  confettiRunning = true;
+
+  function draw() {
+    if (!confettiRunning) return;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach(p => {
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.angle * Math.PI / 180);
+      ctx.fillStyle = p.color;
+      ctx.globalAlpha = 0.9;
+      ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+      ctx.restore();
+      p.x += p.vx;
+      p.y += p.vy;
+      p.angle += p.va;
+      if (p.y > canvas.height + 10) {
+        p.y = -10;
+        p.x = Math.random() * canvas.width;
+      }
+    });
+    frame++;
+    if (frame < 330) confettiAnimId = requestAnimationFrame(draw);
+    else stopConfetti();
+  }
+  draw();
+}
+
+function stopConfetti() {
+  confettiRunning = false;
+  if (confettiAnimId) {
+    cancelAnimationFrame(confettiAnimId);
+    confettiAnimId = null;
+  }
+  const canvas = document.getElementById('confettiCanvas');
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+/* ===========================
+   BOOT
+=========================== */
+loadQuestion(0);
+</script>
+</body>
+</html>
