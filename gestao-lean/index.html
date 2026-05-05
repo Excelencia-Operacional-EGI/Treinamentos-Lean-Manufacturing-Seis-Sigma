@@ -1,0 +1,1300 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gestão Lean – Biolab & CO.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+<style>
+/* ═══════════════════════════════════════
+   TOKENS
+═══════════════════════════════════════ */
+:root {
+  --navy:        #08132a;
+  --navy-mid:    #0c1d3a;
+  --blue-corp:   #0d47a1;
+  --blue-mid:    #1565c0;
+  --blue-light:  #1e88e5;
+  --cyan:        #00c8d7;
+  --cyan-soft:   #e0f9fb;
+  --green:       #2e7d32;
+  --green-soft:  #e8f5e9;
+  --amber:       #e65100;
+  --amber-soft:  #fff3e0;
+  --white:       #ffffff;
+  --surface:     #f7f9fc;
+  --surface2:    #eef2f8;
+  --text-1:      #111827;
+  --text-2:      #374151;
+  --text-3:      #6b7280;
+  --border:      #e2e8f0;
+  --shadow-sm:   0 1px 4px rgba(0,0,0,.06);
+  --shadow-md:   0 4px 16px rgba(13,71,161,.08);
+  --shadow-lg:   0 8px 32px rgba(13,71,161,.14);
+  --r:           16px;
+  --r-sm:        10px;
+  /* waste colors */
+  --w1:#ef4444; --w2:#f97316; --w3:#a855f7;
+  --w4:#ec4899; --w5:#14b8a6; --w6:#6366f1; --w7:#f43f5e;
+  /* step colors */
+  --s1:#0d47a1; --s2:#00838f; --s3:#2e7d32; --s4:#e65100;
+}
+
+/* ═══════════════════════════════════════
+   RESET & BASE
+═══════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+
+body {
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.7;
+  background: var(--surface);
+  color: var(--text-1);
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+.guide { max-width: 640px; margin: 0 auto; }
+
+/* ═══════════════════════════════════════
+   COVER
+═══════════════════════════════════════ */
+.cover {
+  background: var(--navy);
+  background-image:
+    radial-gradient(ellipse 140% 90% at 65% -5%, #1565c07a 0%, transparent 55%),
+    radial-gradient(ellipse 80% 70% at -15% 105%, #00c8d728 0%, transparent 55%),
+    repeating-linear-gradient(-45deg,
+      transparent, transparent 32px,
+      rgba(255,255,255,.014) 32px, rgba(255,255,255,.014) 33px);
+  color: #fff;
+  min-height: 100svh;
+  padding: clamp(40px,8vw,64px) clamp(24px,6vw,40px) clamp(40px,8vw,56px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* decorative circle */
+.cover::before {
+  content: '';
+  position: absolute; right: -80px; bottom: -100px;
+  width: 420px; height: 420px; border-radius: 50%;
+  background: radial-gradient(circle, #1565c038, transparent 70%);
+  pointer-events: none;
+}
+
+/* ghost word */
+.cover::after {
+  content: 'LEAN';
+  position: absolute; right: -8px; bottom: 24px;
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(80px, 22vw, 140px);
+  font-weight: 800;
+  color: rgba(255,255,255,.025);
+  letter-spacing: -5px;
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+}
+
+.badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(0,200,215,.14);
+  border: 1px solid rgba(0,200,215,.44);
+  color: var(--cyan);
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 2.5px; text-transform: uppercase;
+  padding: 8px 18px; border-radius: 100px;
+  margin-bottom: clamp(28px,6vw,44px);
+  animation: fadeDown .6s ease both;
+}
+.badge::before {
+  content: '';
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--cyan); box-shadow: 0 0 7px var(--cyan);
+  animation: blink 2.2s ease-in-out infinite;
+}
+
+.cover-eyebrow {
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 3px; text-transform: uppercase;
+  color: rgba(255,255,255,.4);
+  margin-bottom: 14px;
+  animation: fadeUp .6s .1s ease both;
+}
+
+.cover-title {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(48px, 13vw, 82px);
+  font-weight: 800;
+  line-height: .94;
+  letter-spacing: -2.5px;
+  margin-bottom: 22px;
+  animation: fadeUp .6s .18s ease both;
+}
+.cover-title span {
+  display: block;
+  background: linear-gradient(135deg, var(--cyan) 10%, #7dd3fc 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.cover-divider {
+  width: 40px; height: 3px;
+  background: linear-gradient(90deg, var(--cyan), transparent);
+  border-radius: 2px; margin-bottom: 22px;
+  animation: fadeUp .6s .25s ease both;
+}
+
+.cover-sub {
+  font-size: clamp(14px, 3.8vw, 16px);
+  font-weight: 400; line-height: 1.65;
+  color: rgba(255,255,255,.6);
+  max-width: 360px; margin-bottom: clamp(32px,7vw,48px);
+  animation: fadeUp .6s .3s ease both;
+}
+.cover-sub strong { color: #fff; font-weight: 600; }
+
+.cover-stats {
+  display: flex; gap: clamp(20px,5vw,36px);
+  margin-bottom: clamp(40px,9vw,60px);
+  animation: fadeUp .6s .38s ease both;
+}
+.cstat-num {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(24px,7vw,32px); font-weight: 800;
+  color: var(--cyan); line-height: 1;
+}
+.cstat-lbl {
+  font-size: 10.5px; color: rgba(255,255,255,.38);
+  letter-spacing: .4px; margin-top: 2px;
+}
+
+.cover-foot {
+  margin-top: auto; padding-top: 32px;
+  font-size: 11.5px; color: rgba(255,255,255,.3);
+  animation: fadeUp .6s .46s ease both;
+}
+.cover-foot strong { color: rgba(255,255,255,.55); }
+
+/* ═══════════════════════════════════════
+   SECTION SHELL
+═══════════════════════════════════════ */
+.section {
+  padding: clamp(40px,8vw,56px) clamp(20px,6vw,36px);
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+}
+.section--alt { background: var(--surface); }
+
+.sec-label {
+  display: inline-block;
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 2.5px; text-transform: uppercase;
+  color: var(--blue-light); margin-bottom: 10px;
+}
+.sec-title {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(22px, 5.5vw, 32px);
+  font-weight: 800; line-height: 1.12;
+  color: var(--text-1); margin-bottom: 14px;
+  letter-spacing: -.6px;
+}
+.body-text {
+  font-size: clamp(14.5px, 3.8vw, 15.5px);
+  line-height: 1.82; color: var(--text-2);
+}
+.body-text + .body-text { margin-top: 12px; }
+.body-text strong { color: var(--text-1); font-weight: 600; }
+
+/* ═══════════════════════════════════════
+   QUOTE
+═══════════════════════════════════════ */
+.quote {
+  background: linear-gradient(135deg, var(--cyan-soft), #e1f0fe);
+  border-left: 4px solid var(--blue-light);
+  border-radius: 0 var(--r) var(--r) 0;
+  padding: 18px 22px; margin-top: 24px;
+  font-size: clamp(14px,3.8vw,15px);
+  font-style: italic; font-weight: 500;
+  color: var(--blue-corp); line-height: 1.7;
+}
+
+/* ═══════════════════════════════════════
+   GLOSSARY / INFO BOX
+═══════════════════════════════════════ */
+.info-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 18px 20px; margin-top: 22px;
+}
+.info-box h4 {
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--blue-corp); margin-bottom: 12px;
+}
+.info-box ul { padding-left: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.info-box li {
+  display: flex; gap: 10px; align-items: flex-start;
+  font-size: clamp(13px,3.5vw,13.5px); color: var(--text-2); line-height: 1.65;
+}
+.info-box li::before {
+  content: '→';
+  color: var(--blue-light); font-weight: 700; flex-shrink: 0; margin-top: 1px;
+}
+
+/* ═══════════════════════════════════════
+   ORIGIN TIMELINE
+═══════════════════════════════════════ */
+.origin-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0; margin-top: 26px;
+  border: 1px solid var(--border); border-radius: var(--r);
+  overflow: hidden;
+}
+.origin-item {
+  padding: 16px 12px; text-align: center;
+  background: var(--white);
+  border-right: 1px solid var(--border);
+}
+.origin-item:last-child { border-right: none; }
+.origin-year {
+  font-family: 'Syne', sans-serif;
+  font-size: 16px; font-weight: 800;
+  color: var(--blue-corp); margin-bottom: 5px;
+}
+.origin-desc {
+  font-size: 11px; color: var(--text-3); line-height: 1.5;
+}
+
+/* ═══════════════════════════════════════
+   BENEFIT CARDS
+═══════════════════════════════════════ */
+.benefit-grid { display: flex; flex-direction: column; gap: 12px; margin-top: 26px; }
+.benefit-card {
+  background: var(--white);
+  border-radius: var(--r);
+  padding: 18px 20px;
+  border: 1px solid var(--border);
+  display: flex; gap: 16px; align-items: flex-start;
+  box-shadow: var(--shadow-sm);
+  transition: transform .18s, box-shadow .18s;
+}
+.benefit-card:active { transform: scale(.98); }
+@media (hover: hover) { .benefit-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); } }
+.b-icon {
+  font-size: 22px; flex-shrink: 0;
+  width: 44px; height: 44px; border-radius: 12px;
+  background: var(--surface2);
+  display: flex; align-items: center; justify-content: center;
+}
+.benefit-card h3 {
+  font-size: clamp(14px,3.8vw,15px); font-weight: 700;
+  color: var(--text-1); margin-bottom: 4px; line-height: 1.3;
+}
+.benefit-card p { font-size: clamp(13px,3.4vw,13.5px); color: var(--text-2); line-height: 1.65; }
+
+/* ═══════════════════════════════════════
+   WASTE GRID
+═══════════════════════════════════════ */
+.waste-intro { font-size: 13.5px; color: var(--text-3); margin: 18px 0 10px; font-style: italic; }
+.waste-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.waste-card {
+  border-radius: var(--r);
+  padding: 18px 16px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  position: relative; overflow: hidden;
+  transition: transform .18s;
+}
+.waste-card:active { transform: scale(.97); }
+@media (hover: hover) { .waste-card:hover { transform: translateY(-2px); } }
+.waste-card::before { content:''; position:absolute; top:0;left:0;right:0; height:4px; }
+.waste-card:nth-child(1)::before{background:var(--w1);}
+.waste-card:nth-child(2)::before{background:var(--w2);}
+.waste-card:nth-child(3)::before{background:var(--w3);}
+.waste-card:nth-child(4)::before{background:var(--w4);}
+.waste-card:nth-child(5)::before{background:var(--w5);}
+.waste-card:nth-child(6)::before{background:var(--w6);}
+.waste-card:nth-child(7)::before{background:var(--w7);}
+.waste-num {
+  display: inline-block; margin-bottom: 8px;
+  font-family: 'Syne', sans-serif;
+  font-size: 10px; font-weight: 800;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--text-3);
+}
+.waste-emoji { font-size: 26px; display: block; margin-bottom: 8px; }
+.waste-card h3 {
+  font-size: 13px; font-weight: 700;
+  color: var(--text-1); margin-bottom: 5px; line-height: 1.3;
+}
+.waste-card p { font-size: 12px; line-height: 1.6; color: var(--text-3); }
+
+/* ═══════════════════════════════════════
+   LIFE LIST
+═══════════════════════════════════════ */
+.life-list { display: flex; flex-direction: column; gap: 10px; margin-top: 24px; }
+.life-item {
+  display: flex; gap: 16px; align-items: flex-start;
+  padding: 18px 20px;
+  background: var(--white); border-radius: var(--r);
+  border: 1px solid var(--border);
+  border-left: 5px solid var(--blue-light);
+}
+.life-item:nth-child(2){border-left-color:var(--cyan);}
+.life-item:nth-child(3){border-left-color:var(--green);}
+.life-item:nth-child(4){border-left-color:var(--amber);}
+.life-emoji { font-size: 22px; flex-shrink: 0; line-height: 1.3; padding-top: 2px; }
+.life-item h3 { font-size: clamp(13.5px,3.6vw,14.5px); font-weight: 700; color: var(--text-1); margin-bottom: 3px; }
+.life-item p  { font-size: clamp(13px,3.4vw,13.5px); color: var(--text-2); line-height: 1.65; }
+
+/* ═══════════════════════════════════════
+   TOOLS
+═══════════════════════════════════════ */
+.tools-grid { display: flex; flex-direction: column; gap: 12px; margin-top: 26px; }
+.tool-card {
+  background: var(--white); border-radius: var(--r);
+  padding: 18px 20px;
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--blue-light);
+}
+.tool-card:nth-child(2){border-left-color:var(--cyan);}
+.tool-card:nth-child(3){border-left-color:var(--green);}
+.tool-card:nth-child(4){border-left-color:var(--amber);}
+.tool-card:nth-child(5){border-left-color:var(--w3);}
+.tool-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.tool-badge {
+  font-family: 'Syne', sans-serif;
+  font-size: 11px; font-weight: 800;
+  color: #fff; background: var(--blue-corp);
+  padding: 4px 10px; border-radius: 6px; flex-shrink: 0;
+}
+.tool-card:nth-child(2) .tool-badge{background:var(--s2);}
+.tool-card:nth-child(3) .tool-badge{background:var(--s3);}
+.tool-card:nth-child(4) .tool-badge{background:var(--s4);}
+.tool-card:nth-child(5) .tool-badge{background:var(--w3);}
+.tool-card h3 { font-size: clamp(14px,3.8vw,15px); font-weight: 700; color: var(--text-1); }
+.tool-card p  { font-size: clamp(13px,3.4vw,13.5px); color: var(--text-2); line-height: 1.7; }
+
+/* ═══════════════════════════════════════
+   STEPS / TIMELINE
+═══════════════════════════════════════ */
+.steps { margin-top: 28px; display: flex; flex-direction: column; }
+.step { display: flex; gap: 18px; }
+.step-left { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; width: 46px; }
+.step-num {
+  width: 46px; height: 46px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 800;
+  color: #fff; flex-shrink: 0;
+  box-shadow: 0 4px 14px rgba(0,0,0,.16);
+  position: relative; z-index: 1;
+}
+.step:nth-child(1) .step-num{background:var(--s1);}
+.step:nth-child(2) .step-num{background:var(--s2);}
+.step:nth-child(3) .step-num{background:var(--s3);}
+.step:nth-child(4) .step-num{background:var(--s4);}
+.step-line { flex: 1; width: 2px; background: var(--border); margin: 3px 0; }
+.step:last-child .step-line { display: none; }
+.step-content { padding-bottom: 28px; flex: 1; min-width: 0; }
+.step:last-child .step-content { padding-bottom: 0; }
+.step-content h3 {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(15px,4.2vw,17px); font-weight: 800;
+  color: var(--text-1); margin-bottom: 6px; margin-top: 10px;
+}
+.step-content p { font-size: clamp(13.5px,3.6vw,14.5px); color: var(--text-2); line-height: 1.75; }
+.step-tip {
+  display: block; margin-top: 10px;
+  background: var(--surface2); border-radius: var(--r-sm);
+  padding: 10px 14px;
+  font-size: clamp(12px,3.2vw,12.5px); color: var(--text-3); line-height: 1.55;
+}
+.step-tip strong { color: var(--blue-corp); font-weight: 600; }
+
+/* ═══════════════════════════════════════
+   QUIZ SECTION
+═══════════════════════════════════════ */
+.quiz-section {
+  background: var(--surface);
+  padding: clamp(40px,8vw,56px) clamp(20px,6vw,36px);
+  border-top: 3px solid var(--blue-corp);
+  border-bottom: 1px solid var(--border);
+}
+.quiz-header { text-align: center; margin-bottom: 32px; }
+.quiz-header h2 {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(22px,6vw,30px); font-weight: 800;
+  color: var(--text-1); margin: 8px 0;
+}
+.quiz-header p { font-size: 14px; color: var(--text-3); line-height: 1.6; }
+
+.q-progress-wrap { margin-bottom: 28px; }
+.q-progress-lbl {
+  display: flex; justify-content: space-between;
+  font-size: 11.5px; font-weight: 600; color: var(--text-3);
+  margin-bottom: 8px;
+}
+.q-progress-bar {
+  height: 6px; background: var(--surface2); border-radius: 3px; overflow: hidden;
+}
+.q-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--blue-corp), var(--cyan));
+  border-radius: 3px;
+  transition: width .45s cubic-bezier(.4,0,.2,1);
+  width: 0%;
+}
+
+#quiz-container { display: flex; flex-direction: column; }
+
+.quiz-card {
+  background: var(--white); border-radius: var(--r);
+  padding: clamp(20px,5vw,28px) clamp(18px,5vw,26px);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  display: none;
+}
+.quiz-card.active { display: block; animation: fadeUp .3s ease both; }
+
+.q-num {
+  font-size: 10.5px; font-weight: 700; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--blue-light); margin-bottom: 10px;
+}
+.q-text {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(15px,4.2vw,18px); font-weight: 700;
+  color: var(--text-1); line-height: 1.4; margin-bottom: 20px;
+}
+
+.q-options { display: flex; flex-direction: column; gap: 9px; }
+
+.q-opt {
+  display: flex; align-items: flex-start; gap: 13px;
+  padding: clamp(13px,3.5vw,15px) clamp(14px,4vw,18px);
+  border-radius: var(--r-sm);
+  border: 2px solid var(--border);
+  background: var(--surface);
+  cursor: pointer;
+  transition: border-color .15s, background .15s, transform .12s;
+  font-size: clamp(13.5px,3.7vw,14.5px); color: var(--text-2);
+  line-height: 1.5;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  touch-action: manipulation;
+}
+.q-opt:active { transform: scale(.98); background: #dbeafe; border-color: var(--blue-corp); }
+@media (hover: hover) {
+  .q-opt:hover { border-color: var(--blue-light); background: #eff6ff; }
+}
+.q-opt.correct  { border-color: var(--green); background: var(--green-soft); color: var(--green); font-weight: 600; pointer-events: none; }
+.q-opt.wrong    { border-color: #ef4444; background: #fef2f2; color: #b91c1c; pointer-events: none; }
+.q-opt.disabled { pointer-events: none; opacity: .55; }
+.q-opt.correct.disabled { opacity: 1; }
+
+.q-letter {
+  width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
+  background: var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 800;
+  color: var(--text-3); transition: background .15s, color .15s;
+  margin-top: 1px;
+}
+.q-opt.correct .q-letter { background: var(--green); color: #fff; }
+.q-opt.wrong   .q-letter { background: #ef4444; color: #fff; }
+
+.q-feedback {
+  margin-top: 14px; padding: 14px 16px;
+  border-radius: var(--r-sm); font-size: clamp(13px,3.5vw,13.5px);
+  line-height: 1.65; display: none;
+}
+.q-feedback.show { display: block; animation: fadeUp .25s ease both; }
+.q-feedback.ok  { background: var(--green-soft); border: 1px solid #a7f3d0; color: #065f46; }
+.q-feedback.err { background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; }
+
+.q-nav { display: flex; justify-content: flex-end; margin-top: 20px; }
+.q-btn {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 14px; font-weight: 700;
+  padding: 13px 28px; border-radius: 100px; border: none;
+  cursor: pointer; background: linear-gradient(135deg, var(--blue-corp), var(--blue-light));
+  color: #fff; box-shadow: 0 4px 14px rgba(13,71,161,.28);
+  transition: transform .14s, box-shadow .14s, opacity .14s;
+  touch-action: manipulation;
+}
+.q-btn:active { transform: scale(.96); }
+@media (hover: hover) { .q-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(13,71,161,.36); } }
+.q-btn:disabled { opacity: .38; cursor: not-allowed; transform: none !important; box-shadow: none; }
+
+/* ═══════════════════════════════════════
+   CONCLUSION — CELEBRAÇÃO
+═══════════════════════════════════════ */
+.conclusion {
+  background: var(--navy);
+  background-image:
+    radial-gradient(ellipse 120% 70% at 50% -5%, #1565c060 0%, transparent 55%),
+    radial-gradient(ellipse 90% 60% at 110% 110%, #00c8d722 0%, transparent 50%);
+  color: #fff;
+  padding: clamp(52px,10vw,80px) clamp(20px,6vw,36px) clamp(52px,10vw,72px);
+  text-align: center;
+  position: relative; overflow: hidden;
+}
+
+/* canvas for confetti */
+#confetti-canvas {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  pointer-events: none; z-index: 0;
+}
+
+.conclusion > * { position: relative; z-index: 1; }
+
+/* trophy ring */
+.trophy-ring {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: clamp(80px,18vw,100px); height: clamp(80px,18vw,100px);
+  border-radius: 50%;
+  background: conic-gradient(var(--cyan) 0%, #3b82f6 35%, var(--cyan) 70%, #a78bfa 100%);
+  padding: 3px; margin-bottom: clamp(20px,5vw,28px);
+  animation: spinRing 4s linear infinite;
+  box-shadow: 0 0 40px rgba(0,200,215,.35);
+}
+.trophy-inner {
+  width: 100%; height: 100%; border-radius: 50%;
+  background: var(--navy-mid);
+  display: flex; align-items: center; justify-content: center;
+  font-size: clamp(34px,9vw,44px);
+}
+
+.concl-eyebrow {
+  font-size: 10px; font-weight: 700; letter-spacing: 3px;
+  text-transform: uppercase; color: var(--cyan);
+  margin-bottom: 12px; display: block;
+}
+
+.concl-title {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(26px,7.5vw,42px); font-weight: 800;
+  line-height: 1.08; letter-spacing: -.8px;
+  margin-bottom: 18px;
+}
+
+.score-reveal {
+  display: inline-block;
+  background: rgba(0,200,215,.12);
+  border: 1px solid rgba(0,200,215,.35);
+  border-radius: 100px;
+  padding: 10px 28px; margin-bottom: 24px;
+}
+.score-reveal .big {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(28px,8vw,40px); font-weight: 800;
+  color: var(--cyan); line-height: 1;
+}
+.score-reveal .small {
+  font-size: 13px; color: rgba(255,255,255,.5);
+}
+
+.concl-msg {
+  font-size: clamp(14px,3.8vw,15.5px); line-height: 1.78;
+  color: rgba(255,255,255,.62); max-width: 400px; margin: 0 auto 32px;
+}
+.concl-msg strong { color: rgba(255,255,255,.9); }
+
+/* achievement badges */
+.badges-row {
+  display: flex; justify-content: center; gap: 12px;
+  flex-wrap: wrap; margin-bottom: 36px;
+}
+.ach-badge {
+  background: rgba(255,255,255,.07);
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: 100px; padding: 8px 16px;
+  font-size: 12px; font-weight: 600; color: rgba(255,255,255,.7);
+  display: flex; align-items: center; gap: 6px;
+}
+.ach-badge .dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--cyan);
+}
+
+.retry-btn {
+  display: inline-block;
+  border: 2px solid rgba(255,255,255,.2);
+  border-radius: 100px; padding: 13px 32px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 14px; font-weight: 700;
+  color: rgba(255,255,255,.7);
+  cursor: pointer; background: transparent;
+  transition: border-color .2s, color .2s;
+  touch-action: manipulation;
+}
+.retry-btn:hover { border-color: var(--cyan); color: var(--cyan); }
+
+/* hidden by default; shown via JS */
+.conclusion { display: none; }
+
+/* ═══════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════ */
+.footer {
+  background: var(--navy-mid);
+  padding: 24px clamp(20px,6vw,36px);
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; flex-wrap: wrap;
+  border-top: 1px solid rgba(255,255,255,.06);
+}
+.footer-brand {
+  font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700;
+  color: #fff;
+}
+.footer-brand span { color: var(--cyan); }
+.footer-copy { font-size: 10.5px; color: rgba(255,255,255,.28); }
+
+/* ═══════════════════════════════════════
+   ANIMATIONS
+═══════════════════════════════════════ */
+@keyframes fadeDown { from{opacity:0;transform:translateY(-14px);}to{opacity:1;transform:translateY(0);} }
+@keyframes fadeUp   { from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);} }
+@keyframes blink    { 0%,100%{opacity:1;transform:scale(1);}50%{opacity:.4;transform:scale(.7);} }
+@keyframes spinRing { to{ transform: rotate(360deg); } }
+@keyframes popIn    { 0%{transform:scale(.5);opacity:0;}70%{transform:scale(1.1);}100%{transform:scale(1);opacity:1;} }
+
+/* ═══════════════════════════════════════
+   PRINT
+═══════════════════════════════════════ */
+@media print {
+  body{background:#fff;}
+  .cover,.footer{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  .guide{max-width:100%;}
+  .quiz-section,.conclusion{display:none!important;}
+  @page{margin:0;size:A4;}
+}
+</style>
+</head>
+<body>
+<div class="guide">
+
+<!-- ═══════════ CAPA ═══════════ -->
+<section class="cover">
+  <div class="badge">Treinamento Operacional</div>
+  <p class="cover-eyebrow">Biolab &amp; CO.</p>
+  <h1 class="cover-title">🚀 <span>Gestão<br>Lean</span></h1>
+  <div class="cover-divider"></div>
+  <p class="cover-sub"><strong>Zero Desperdício, Máxima Eficiência.</strong><br>O Guia Prático para a Excelência Operacional.</p>
+  <div class="cover-stats">
+    <div><div class="cstat-num">7</div><div class="cstat-lbl">Desperdícios</div></div>
+    <div><div class="cstat-num">5</div><div class="cstat-lbl">Ferramentas</div></div>
+    <div><div class="cstat-num">4</div><div class="cstat-lbl">Passos</div></div>
+  </div>
+  <div class="cover-foot">Guia de Auto Treinamento &nbsp;·&nbsp; <strong>Biolab &amp; CO.</strong></div>
+</section>
+
+<!-- ═══════════ MÓD 01 — FUNDAMENTOS ═══════════ -->
+<section class="section">
+  <span class="sec-label">Módulo 01 — Fundamentos</span>
+  <h2 class="sec-title">O Que é Gestão Lean? 🤔</h2>
+  <p class="body-text"><strong>Lean Manufacturing</strong> (Manufatura Enxuta) é uma filosofia de gestão criada no Japão pela Toyota nos anos 1950, hoje adotada pelas maiores indústrias do mundo, incluindo o setor farmacêutico. Seu princípio central é direto: <strong>maximizar o valor entregue ao cliente, eliminando ao máximo os desperdícios</strong> de tempo, material e esforço humano.</p>
+  <p class="body-text">Na nossa rotina, isso significa enxergar com clareza tudo aquilo que consome recursos <em>sem agregar valor</em> ao medicamento ou ao paciente — e agir para eliminar esses obstáculos de forma sistemática. Não se trata de trabalhar mais, mas de <strong>trabalhar melhor</strong>.</p>
+
+  <div class="origin-row">
+    <div class="origin-item"><div class="origin-year">1950s</div><div class="origin-desc">Toyota cria o TPS no Japão pós-guerra</div></div>
+    <div class="origin-item"><div class="origin-year">1990</div><div class="origin-desc">Lean ganha o mundo com "A Máquina que Mudou o Mundo"</div></div>
+    <div class="origin-item"><div class="origin-year">2000s</div><div class="origin-desc">Farma e FDA adotam Lean e Six Sigma</div></div>
+    <div class="origin-item"><div class="origin-year">Hoje</div><div class="origin-desc">Padrão global de excelência operacional</div></div>
+  </div>
+
+  <blockquote class="quote">"Fazer mais e melhor, com menos esforço, garantindo a segurança e a qualidade que a saúde exige. A melhoria é contínua e feita por todos."</blockquote>
+
+  <div class="info-box">
+    <h4>💡 Glossário — Termos essenciais deste guia</h4>
+    <ul>
+      <li><strong>Muda</strong> — Japonês para "desperdício". Tudo que não gera valor ao produto.</li>
+      <li><strong>Kaizen</strong> — "Melhoria contínua". Pequenas melhorias diárias feitas por todos.</li>
+      <li><strong>Gemba</strong> — O "chão de fábrica": onde o valor é criado de verdade.</li>
+      <li><strong>Takt Time</strong> — O ritmo ideal de produção para atender a demanda sem excessos.</li>
+      <li><strong>VSM</strong> — Value Stream Mapping: mapa visual do fluxo completo do processo.</li>
+      <li><strong>OEE</strong> — Eficiência Global do Equipamento: disponibilidade × performance × qualidade.</li>
+      <li><strong>Lead Time</strong> — Tempo total desde o pedido até a entrega do produto acabado.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ═══════════ MÓD 02 — RELEVÂNCIA ═══════════ -->
+<section class="section section--alt">
+  <span class="sec-label">Módulo 02 — Relevância</span>
+  <h2 class="sec-title">Por Que Usar na Biolab &amp; CO.? 🎯</h2>
+  <p class="body-text">A indústria farmacêutica opera sob pressão dupla: <strong>rigor regulatório máximo</strong> (ANVISA, GMP, FDA) e <strong>demanda crescente por eficiência</strong>. O Lean é a ponte — garante qualidade e velocidade ao mesmo tempo, sem comprometer a segurança do paciente.</p>
+
+  <div class="benefit-grid">
+    <div class="benefit-card"><div class="b-icon">📈</div><div><h3>Aumenta a Produtividade</h3><p>Elimina gargalos e otimiza o fluxo, refletindo diretamente em melhor <strong>OEE</strong> e maior estabilidade nas linhas de produção.</p></div></div>
+    <div class="benefit-card"><div class="b-icon">🔄</div><div><h3>Promove a Melhoria Contínua</h3><p>Incentiva o <strong>Kaizen diário</strong> e a resolução de problemas na causa raiz — a melhoria nasce de quem opera, sem depender de grandes projetos.</p></div></div>
+    <div class="benefit-card"><div class="b-icon">😊</div><div><h3>Engaja e Protege a Equipe</h3><p>Dá voz a quem opera a máquina. Reduz esforços desnecessários e foca em <strong>segurança e ergonomia</strong> no chão de fábrica.</p></div></div>
+    <div class="benefit-card"><div class="b-icon">🧪</div><div><h3>Garante Qualidade Farmacêutica</h3><p>Processos padronizados reduzem variabilidade — essencial para atender às <strong>BPF</strong> e manter conformidade regulatória em cada batelada.</p></div></div>
+    <div class="benefit-card"><div class="b-icon">💰</div><div><h3>Reduz Custos Operacionais</h3><p>Menos desperdício = menos matéria-prima, energia e mão de obra para o mesmo volume — gerando <strong>competitividade real de mercado</strong>.</p></div></div>
+  </div>
+</section>
+
+<!-- ═══════════ MÓD 03 — 7 DESPERDÍCIOS ═══════════ -->
+<section class="section">
+  <span class="sec-label">Módulo 03 — Os 7 Desperdícios</span>
+  <h2 class="sec-title">Os Inimigos da Produtividade ⚙️</h2>
+  <p class="body-text">No Lean, os desperdícios são chamados de <strong>Muda</strong>. O sistema Toyota identificou <strong>7 tipos</strong> que aparecem em toda operação industrial. Reconhecê-los é o primeiro passo para eliminá-los.</p>
+  <p class="waste-intro">Leia cada card e pergunte: onde eu já vi isso acontecer na minha área?</p>
+
+  <div class="waste-grid">
+    <div class="waste-card"><span class="waste-num">Muda #1</span><span class="waste-emoji">📦</span><h3>Superprodução</h3><p>Produzir mais ou antes do necessário. Lotes gigantes escondem todos os outros Mudas — é considerado o pior desperdício.</p></div>
+    <div class="waste-card"><span class="waste-num">Muda #2</span><span class="waste-emoji">🏭</span><h3>Estoque Excessivo</h3><p>Material além do necessário. Ocupa espaço, congela capital e pode gerar vencimento ou obsolescência de lote.</p></div>
+    <div class="waste-card"><span class="waste-num">Muda #3</span><span class="waste-emoji">🚶</span><h3>Movimentação</h3><p>Passos extras do operador para buscar ferramentas ou informações. Ligado diretamente à falta de 5S e layout ruim.</p></div>
+    <div class="waste-card"><span class="waste-num">Muda #4</span><span class="waste-emoji">🚛</span><h3>Transporte</h3><p>Movimentação desnecessária de materiais. Cada transferência é risco de dano, contaminação ou extravio.</p></div>
+    <div class="waste-card"><span class="waste-num">Muda #5</span><span class="waste-emoji">⏳</span><h3>Espera</h3><p>Máquinas ou pessoas paradas aguardando aprovação de qualidade, materiais, manutenção ou setups longos.</p></div>
+    <div class="waste-card"><span class="waste-num">Muda #6</span><span class="waste-emoji">⚙️</span><h3>Superprocessamento</h3><p>Fazer mais do que o especificado: inspeções duplas, aprovações redundantes ou etapas que o cliente não pediu.</p></div>
+    <div class="waste-card"><span class="waste-num">Muda #7</span><span class="waste-emoji">❌</span><h3>Defeitos e Retrabalho</h3><p>Produtos fora do padrão que exigem reprocesso ou descarte — o desperdício de maior impacto visível na qualidade.</p></div>
+  </div>
+
+  <div class="info-box" style="margin-top:20px;">
+    <h4>🔎 Como identificar um Muda na prática</h4>
+    <ul>
+      <li>Faça um <strong>Gemba Walk</strong>: caminhe pela linha com olhos críticos e sem pressa.</li>
+      <li>Pergunte: <em>"Esse passo faz o produto avançar ou apenas o movimenta?"</em></li>
+      <li>Cronometre esperas, anote pilhas de material parado e registre tudo.</li>
+      <li>Use o VSM para visualizar onde o fluxo para e onde é contínuo.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ═══════════ MÓD 04 — VIDA COTIDIANA ═══════════ -->
+<section class="section section--alt">
+  <span class="sec-label">Módulo 04 — Conexão com o Cotidiano</span>
+  <h2 class="sec-title">Você Já Vê o Lean por Aí! 🏠</h2>
+  <p class="body-text">O Lean não é teoria abstrata reservada a especialistas. Seus princípios aparecem naturalmente no dia a dia — sempre que agimos de forma organizada e sem desperdício. Perceba que você <em>já pratica Lean sem saber</em>:</p>
+
+  <div class="life-list">
+    <div class="life-item"><div class="life-emoji">🧹</div><div><h3>Arrumar a Casa → 5S</h3><p>Ter um lugar fixo para cada coisa evita perder 10 minutos procurando a chave do carro. Na fábrica, o <strong>5S</strong> (Separar, Ordenar, Limpar, Padronizar, Sustentar) garante que toda ferramenta esteja pronta para uso imediato.</p></div></div>
+    <div class="life-item"><div class="life-emoji">🛒</div><div><h3>Supermercado → Just-in-Time</h3><p>Comprar só o que vai consumir na semana evita que a comida estrague. Na produção, o <strong>JIT</strong> garante que o material certo chegue na quantidade certa, no momento exato — sem estoque desnecessário.</p></div></div>
+    <div class="life-item"><div class="life-emoji">🍳</div><div><h3>Seguir uma Receita → Trabalho Padrão</h3><p>Uma receita validada garante que o bolo saia perfeito toda vez. Na linha, o <strong>SOP (Trabalho Padrão)</strong> documenta o melhor método conhecido, eliminando variação de qualidade entre operadores.</p></div></div>
+    <div class="life-item"><div class="life-emoji">📍</div><div><h3>GPS no Trânsito → VSM</h3><p>O GPS mostra onde o trânsito está congestionado. O <strong>VSM (Mapa do Fluxo de Valor)</strong> faz o mesmo com o processo: revela onde o tempo é desperdiçado e onde o fluxo precisa ser desobstruído.</p></div></div>
+  </div>
+</section>
+
+<!-- ═══════════ MÓD 05 — FERRAMENTAS ═══════════ -->
+<section class="section">
+  <span class="sec-label">Módulo 05 — Ferramentas</span>
+  <h2 class="sec-title">O Kit de Ferramentas Lean 🔧</h2>
+  <p class="body-text">O Lean possui ferramentas práticas que transformam a filosofia em ação concreta no chão de fábrica. Cada uma tem um propósito específico — saber <em>quando</em> e <em>como</em> usá-las é o que diferencia quem entende Lean de quem apenas conhece o nome.</p>
+
+  <div class="tools-grid">
+    <div class="tool-card">
+      <div class="tool-header"><span class="tool-badge">5S</span><h3>Organização e Disciplina</h3></div>
+      <p>5 etapas: <em>Seiri (Separar)</em> o necessário do inútil; <em>Seiton (Ordenar)</em> cada item em seu lugar; <em>Seisō (Limpar e inspecionar)</em>; <em>Seiketsu (Padronizar)</em> o novo estado; <em>Shitsuke (Sustentar)</em> com disciplina diária. É a base de toda implementação Lean — sem organização, as demais ferramentas não se sustentam.</p>
+    </div>
+    <div class="tool-card">
+      <div class="tool-header"><span class="tool-badge">SMED</span><h3>Troca Rápida de Ferramentas</h3></div>
+      <p><em>Single Minute Exchange of Die.</em> Técnica para reduzir o tempo de setup para menos de 10 minutos. Separa atividades internas (exigem parada) das externas (feitas com a linha rodando) e converte o máximo para externas — aumentando a flexibilidade da linha e reduzindo o Muda de Espera.</p>
+    </div>
+    <div class="tool-card">
+      <div class="tool-header"><span class="tool-badge">KAIZEN</span><h3>Melhoria Contínua</h3></div>
+      <p>Filosofia de pequenas melhorias diárias realizadas por toda a equipe, sem grandes investimentos. Um evento Kaizen começa com observação no Gemba, propõe solução, implementa e padroniza. O segredo é a consistência: muitas pequenas melhorias superam uma grande transformação isolada.</p>
+    </div>
+    <div class="tool-card">
+      <div class="tool-header"><span class="tool-badge">KANBAN</span><h3>Gestão Visual do Fluxo</h3></div>
+      <p>Sistema de sinalização visual (cartões, quadros, luzes) que controla o fluxo de materiais. O princípio: nada é produzido ou movimentado sem uma demanda real sinalizada pelo Kanban — evita superprodução e torna problemas imediatamente visíveis para toda a equipe.</p>
+    </div>
+    <div class="tool-card">
+      <div class="tool-header"><span class="tool-badge">A3</span><h3>Solução Estruturada de Problemas</h3></div>
+      <p>Análise de problemas que cabe em uma folha A3, baseada no ciclo PDCA. Força a equipe a: definir o problema com precisão, mapear a situação atual, encontrar a causa raiz (Ishikawa / 5 Porquês), propor contramedidas, implementar, verificar resultados e padronizar. Simples na forma, poderoso no resultado.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ MÓD 06 — 4 PASSOS ═══════════ -->
+<section class="section section--alt">
+  <span class="sec-label">Módulo 06 — Aplicação Prática</span>
+  <h2 class="sec-title">Como Aplicar o Lean em 4 Passos 🛠️</h2>
+  <p class="body-text">Esses 4 passos seguem os princípios do <em>Lean Thinking</em>. Aplique em sequência, partindo sempre da sua área. Não é preciso esperar um projeto formal — comece agora, onde você está.</p>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-left"><div class="step-num">1</div><div class="step-line"></div></div>
+      <div class="step-content">
+        <h3>Identifique o Valor</h3>
+        <p>Observe sua linha com os olhos do paciente. O que realmente transforma a matéria-prima no produto que ele precisa? O valor é sempre definido pelo cliente — não pela empresa ou pelo operador.</p>
+        <span class="step-tip">🔍 <strong>Pergunta-chave:</strong> "Se o paciente pudesse ver esse passo, ele pagaria por ele?"</span>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-left"><div class="step-num">2</div><div class="step-line"></div></div>
+      <div class="step-content">
+        <h3>Enxergue o Desperdício</h3>
+        <p>Tudo que não for valor é desperdício. Faça um <em>Gemba Walk</em> e anote: onde o material para? Onde o operador espera? O que é refeito com frequência? Dados reais valem mais que percepções.</p>
+        <span class="step-tip">📋 <strong>Dica:</strong> Use os 7 Mudas do Módulo 03 como checklist durante o Gemba Walk.</span>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-left"><div class="step-num">3</div><div class="step-line"></div></div>
+      <div class="step-content">
+        <h3>Crie Fluxo e Elimine Barreiras</h3>
+        <p>Use <strong>5S</strong> para organizar, <strong>SMED</strong> para reduzir setups, <strong>Kanban</strong> para controlar o fluxo. O objetivo é que o material percorra o processo como água — sem represamento entre etapas.</p>
+        <span class="step-tip">🌊 <strong>Conceito:</strong> Fluxo contínuo = menos estoque, menos espera, menor lead time e qualidade mais fácil de controlar.</span>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-left"><div class="step-num">4</div><div class="step-line"></div></div>
+      <div class="step-content">
+        <h3>Busque a Perfeição (Kaizen)</h3>
+        <p>A melhoria não tem fim. Após cada mudança, <strong>padronize</strong> (atualize o SOP), treine a equipe e defina indicadores para medir o resultado. Depois, recomece o ciclo — há sempre algo a melhorar.</p>
+        <span class="step-tip">🔁 <strong>Atenção:</strong> Sem padronização, a melhoria é temporária. O processo volta ao estado anterior sem um padrão documentado e praticado.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ QUIZ ═══════════ -->
+<section class="quiz-section">
+  <div class="quiz-header">
+    <span class="sec-label" style="display:block;text-align:center;">Avaliação Final</span>
+    <h2>Quiz de Conhecimento 🧠</h2>
+    <p>10 questões para verificar o que você aprendeu. Leia com atenção — cada questão tem apenas uma resposta correta.</p>
+  </div>
+
+  <div class="q-progress-wrap">
+    <div class="q-progress-lbl">
+      <span id="progress-label">Questão 1 de 10</span>
+      <span id="progress-pct">0%</span>
+    </div>
+    <div class="q-progress-bar"><div class="q-progress-fill" id="progress-fill"></div></div>
+  </div>
+
+  <div id="quiz-container">
+
+    <!-- Q1 -->
+    <div class="quiz-card active" data-answer="1">
+      <div class="q-num">Questão 01 / 10</div>
+      <div class="q-text">O que significa o termo "Lean Manufacturing"?</div>
+      <div class="q-options">
+        <div class="q-opt" data-idx="0"><div class="q-letter">A</div>Produção em larga escala com foco em volume máximo de saída por turno</div>
+        <div class="q-opt" data-idx="1"><div class="q-letter">B</div>Manufatura Enxuta: maximizar o valor entregue ao cliente minimizando desperdícios de tempo, material e esforço</div>
+        <div class="q-opt" data-idx="2"><div class="q-letter">C</div>Controle estatístico de qualidade desenvolvido nos EUA nos anos 1980 pela Motorola</div>
+        <div class="q-opt" data-idx="3"><div class="q-letter">D</div>Sistema de gestão financeira focado exclusivamente na redução do custo de matéria-prima</div>
+      </div>
+      <div class="q-feedback"></div>
+      <div class="q-nav"><button class="q-btn" id="btn-1" disabled onclick="nextQ(1)">Próxima →</button></div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="quiz-card" data-answer="2">
+      <div class="q-num">Questão 02 / 10</div>
+      <div class="q-text">Qual empresa criou o sistema que originou o Lean Manufacturing?</div>
+      <div class="q-options">
+        <div class="q-opt" data-idx="0"><div class="q-letter">A</div>Ford Motors, nos anos 1920, com a linha de montagem em série</div>
+        <div class="q-opt" data-idx="1"><div class="q-letter">B</div>General Electric, com o programa Six Sigma nos anos 1980</div>
+        <div class="q-opt" data-idx="2"><div class="q-letter">C</div>Toyota, no Japão dos anos 1950, com o Toyota Production System (TPS)</div>
+        <div class="q-opt" data-idx="3"><div class="q-letter">D</div>Boeing, com o programa de manufatura enxuta na indústria aeronáutica</div>
+      </div>
+      <div class="q-feedback"></div>
+      <div class="q-nav"><button class="q-btn" id="btn-2" disabled onclick="nextQ(2)">Próxima →</button></div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="quiz-card" data-answer="0">
+      <div class="q-num">Questão 03 / 10</div>
+      <div class="q-text">O que é "Muda" no contexto do Lean?</div>
+      <div class="q-options">
+        <div class="q-opt" data-idx="0"><div class="q-letter">A</div>Palavra japonesa para "desperdício" — qualquer atividade que consome recursos sem agregar valor ao cliente</div>
+        <div class="q-opt" data-idx="1"><div class="q-letter">B</div>Nome dado à etapa de auditoria interna nos processos de Boas Práticas de Fabricação</div>
+        <div class="q-opt" data-idx="2"><div class="q-letter">C</div>Indicador de eficiência global de máquinas, equivalente ao OEE</div>
+        <div class="q-opt" data-idx="3"><div class="q-letter">D</div>Técnica de análise de causa raiz baseada no diagrama de Ishikawa</div>
+      </div>
+      <div class="q-feedback"></div>
+      <div class="q-nav"><button class="q-btn" id="btn-3" disabled onclick="nextQ(3)">Próxima →</button></div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="quiz-card" data-answer="3">
+      <div class="q-num">Questão 04 / 10</div>
+      <div class="q-text">Quantos são os tipos clássicos de desperdício (Muda) identificados pelo sistema Toyota?</div>
+      <div class="q-options">
+        <div class="q-opt" data-idx="0"><div class="q-letter">A</div>3 tipos — Superprodução, Espera e Defeitos</div>
+        <div class="q-opt" data-idx="1"><div class="q-letter">B</div>5 tipos, correspondentes às etapas do 5S</div>
+        <div class="q-opt" data-idx="2"><div class="q-letter">C</div>10 tipos, incluindo categorias financeiras e administrativas</div>
+        <div class="q-opt" data-idx="3"><div class="q-letter">D</div>7 tipos — Superprodução, Estoque, Movimentação, Transporte, Espera, Superprocessamento e Defeitos</div>
+      </div>
+      <div class="q-feedback"></div>
+      <div class="q-nav"><button class="q-btn" id="btn-4" disabled onclick="nextQ(4)">Próxima →</button></div>
+    </div>
+
+    <!-- Q5 -->
+    <div class="quiz-card" data-answer="2">
+      <div class="q-num">Questão 05 / 10</div>
+      <div class="q-text">Qual prática cotidiana melhor representa o conceito de "Trabalho Padrão" (SOP) do Lean?</div>
+      <div class="q-options">
+        <div class="q-opt" data-idx="0"><div class="q-letter">A</div>Comprar apenas o necessário no supermercado para não gerar estoque em casa</div>
+        <div class="q-opt" data-idx="1"><div class="q-letter">B</div>Organizar a casa de modo que cada objeto tenha um lugar fixo e acessível</div>
+        <div class="q-opt" data-idx="2"><div class="q-letter">C</div>Seguir uma receita de culinária validada para garantir resultado consistente toda vez</div>
+        <div class="q-opt" data-idx="3"><div class="q-letter">D</div>Usar o GPS para evitar engarrafamentos e reduzir o tempo de deslocamento</div>
+      </div>
+      <div class="q-feedback"></div>
+      <div class="q-nav"><button class="q-btn" id="btn-5" disabled onclick="nextQ(5)">Próxima →</button></div>
+    </div>
+
+    <!-- Q6 -->
+    <div class="quiz-card" data-answer="1">
+      <div class="q-num">Questão 06 / 10</div>
+      <div class="q-text">O que é o "Kaizen" e como se aplica na operação diária?</div>
+      <div class="q-options">
+        <div class="q-opt" data-idx="0"><div class="q-letter">A</div>Indicador japonês que mede a eficiência global de equipamentos por turno</div>
+        <div class="q-opt" data-idx="1"><div class="q-letter">B</div>Filosofia de melhoria contínua com pequenas melhorias diárias realizadas por todos, sem grandes investimentos</div>
+        <div class="q-opt" data-idx="2"><div class="q-letter">C</div>Sistema de cartões de controle de estoque para sinalizar reposição de materiais</div>
+        <div class="q-opt" data-idx="3"><div class="q-letter">D</div>Técnica de manutenção preventiva baseada na análise de falhas históricas</div>
+      </div>
+      <div class="q-feedback"></div>
+      <div class="q-nav"><button class="q-btn" id="btn-6" disabled onclick="nextQ(6)">Próxima →</button></div>
+    </div>
+
+    <!-- Q7 -->
+    <div class="quiz-card" data-answer="0">
+      <div class="q-num">Questão 07 / 10</div>
+      <div class="q-text">Qual ferramenta Lean reduz especificamente o tempo de troca de produto ou formato (setup)?</div>
+      <div class="q-options">
+        <div class="q-opt" data-idx="0"><div class="q-letter">A</div>SMED (Single Minute Exchange of Die) — reduz setups para menos de 10 minutos convertendo atividades internas em externas</div>
+        <div class="q-opt" data-idx="1"><div class="q-letter">B</div>5S — organização e padronização do ambiente de trabalho em 5 etapas</div>
+        <div class="q-opt" data-idx="2"><div class="q-letter">C</div>A3 — método estruturado de solução de problemas em uma única folha</div>
+        <div class="q-opt" data-idx="3"><div class="q-letter">D</div>VSM — mapeamento visual do fluxo de valor do processo produtivo</div>
+      </div>
+      <div class="q-feedback"></div>
+      <div class="q-nav"><button class="q-btn" id="btn-7" disabled onclick="nextQ(7)">Próxima →</button></div>
+    </div>
+
+    <!-- Q8 -->
+    <div class="quiz-card" data-answer="3">
+      <div class="q-num">Questão 08 / 10</div>
+      <div class="q-text">Por que a Superprodução é considerada o "pior" desperdício no sistema Lean?</div>
+      <div class="q-options">
+        <div class="q-opt" data-idx="0"><div class="q-letter">A</div>Porque gera custos visíveis imediatos de descarte de produtos fora do prazo</div>
+        <div class="q-opt" data-idx="1"><div class="q-letter">B</div>Porque paralisa completamente a linha, afetando todos os indicadores</div>
+        <div class="q-opt" data-idx="2"><div class="q-letter">C</div>Porque desgasta o operador e aumenta o risco de acidentes na linha</div>
+        <div class="q-opt" data-idx="3"><div class="q-letter">D</div>Porque os estoques gerados mascaram e escondem todos os outros desperdícios do processo</div>
+      </div>
+      <div class="q-feedback"></div>
+      <div class="q-nav"><button class="q-btn" id="btn-8" disabled onclick="nextQ(8)">Próxima →</button></div>
+    </div>
+
+    <!-- Q9 -->
+    <div class="quiz-card" data-answer="1">
+      <div class="q-num">Questão 09 / 10</div>
+      <div class="q-text">O que é o "Gemba" e qual é a sua importância no Lean?</div>
+      <div class="q-options">
+        <div class="q-opt" data-idx="0"><div class="q-letter">A</div>O sistema Kanban que controla visualmente o fluxo de materiais entre estações</div>
+        <div class="q-opt" data-idx="1"><div class="q-letter">B</div>O "chão de fábrica" — o lugar real onde o trabalho acontece e onde os problemas devem ser observados pessoalmente</div>
+        <div class="q-opt" data-idx="2"><div class="q-letter">C</div>O indicador OEE que mede eficiência global do equipamento em tempo real</div>
+        <div class="q-opt" data-idx="3"><div class="q-letter">D</div>A reunião diária de melhoria contínua realizada no início de cada turno</div>
+      </div>
+      <div class="q-feedback"></div>
+      <div class="q-nav"><button class="q-btn" id="btn-9" disabled onclick="nextQ(9)">Próxima →</button></div>
+    </div>
+
+    <!-- Q10 -->
+    <div class="quiz-card" data-answer="2">
+      <div class="q-num">Questão 10 / 10</div>
+      <div class="q-text">O que é indispensável após implementar uma melhoria Lean para que ela se sustente no tempo?</div>
+      <div class="q-options">
+        <div class="q-opt" data-idx="0"><div class="q-letter">A</div>Comunicar o resultado ao gestor e registrar em planilha de controle de produção</div>
+        <div class="q-opt" data-idx="1"><div class="q-letter">B</div>Realizar imediatamente um novo Gemba Walk para identificar o próximo desperdício</div>
+        <div class="q-opt" data-idx="2"><div class="q-letter">C</div>Padronizar a nova forma de trabalhar (SOP atualizado), treinar a equipe e definir indicadores de acompanhamento</div>
+        <div class="q-opt" data-idx="3"><div class="q-letter">D</div>Aguardar 30 dias para avaliar se a melhoria foi efetiva antes de qualquer registro formal</div>
+      </div>
+      <div class="q-feedback"></div>
+      <div class="q-nav"><button class="q-btn" id="btn-10" disabled onclick="finishQuiz()">Ver Resultado ✓</button></div>
+    </div>
+
+  </div><!-- /#quiz-container -->
+</section>
+
+<!-- ═══════════ CONCLUSÃO CELEBRATÓRIA ═══════════ -->
+<section class="conclusion" id="conclusion-section">
+  <canvas id="confetti-canvas"></canvas>
+
+  <div class="trophy-ring">
+    <div class="trophy-inner" id="trophy-icon">🏆</div>
+  </div>
+
+  <span class="concl-eyebrow">Treinamento Concluído</span>
+
+  <h2 class="concl-title" id="concl-title">Parabéns!<br>Você chegou lá! 🎉</h2>
+
+  <div class="score-reveal" id="score-reveal">
+    <div class="big" id="score-big">—</div>
+    <div class="small">acertos de 10</div>
+  </div>
+
+  <p class="concl-msg" id="concl-msg">…</p>
+
+  <div class="badges-row" id="badges-row"></div>
+
+  <button class="retry-btn" onclick="retryQuiz()">↩ Refazer o Quiz</button>
+</section>
+
+<!-- ═══════════ FOOTER ═══════════ -->
+<footer class="footer">
+  <div class="footer-brand">Biolab <span>&amp; CO.</span></div>
+  <div class="footer-copy">Guia de Auto Treinamento · Gestão Lean · Uso Interno</div>
+</footer>
+
+</div><!-- /.guide -->
+
+<script>
+/* ═══════════════════════════════
+   QUIZ ENGINE
+═══════════════════════════════ */
+const TOTAL = 10;
+let score = 0;
+let answered = new Array(TOTAL + 1).fill(false);
+
+const FB = [
+  {ok:"✅ Correto! Lean = Manufatura Enxuta: maximizar valor ao cliente eliminando tudo que é desperdício.",
+   err:"❌ Incorreto. Lean Manufacturing é Manufatura Enxuta — a filosofia de maximizar valor e minimizar desperdícios, não de aumentar volume de produção."},
+  {ok:"✅ Correto! O Toyota Production System (TPS), criado nos anos 1950, é o berço do Lean Manufacturing.",
+   err:"❌ Incorreto. Foi a Toyota, no Japão dos anos 1950, que criou o TPS — o sistema que inspirou todo o Lean Manufacturing mundial."},
+  {ok:"✅ Correto! 'Muda' é japonês para desperdício — qualquer atividade que consome recursos sem criar valor real para o cliente.",
+   err:"❌ Incorreto. 'Muda' é a palavra japonesa para desperdício. É o conceito central do Lean: eliminar tudo que não agrega valor."},
+  {ok:"✅ Correto! São 7 Mudas: Superprodução, Estoque, Movimentação, Transporte, Espera, Superprocessamento e Defeitos.",
+   err:"❌ Incorreto. O TPS identificou 7 tipos clássicos de desperdício (Muda). Conhecê-los é fundamental para o Lean."},
+  {ok:"✅ Correto! Seguir uma receita validada é o Trabalho Padrão: método documentado para garantir resultado consistente.",
+   err:"❌ Incorreto. O Trabalho Padrão equivale a seguir uma receita — o melhor método conhecido, documentado para garantir repetibilidade."},
+  {ok:"✅ Correto! Kaizen é a filosofia de melhoria contínua: pequenas mudanças diárias feitas por todos, de forma constante.",
+   err:"❌ Incorreto. Kaizen é melhoria contínua — pequenas melhorias diárias realizadas por toda a equipe, sem grandes investimentos."},
+  {ok:"✅ Correto! O SMED foi desenvolvido exatamente para reduzir setups para menos de 10 minutos.",
+   err:"❌ Incorreto. A ferramenta específica para redução de setup é o SMED. O 5S organiza; o A3 resolve problemas; o VSM mapeia fluxos."},
+  {ok:"✅ Correto! A Superprodução é o pior Muda porque os estoques gerados escondem todos os outros desperdícios do processo.",
+   err:"❌ Incorreto. A Superprodução é o pior desperdício porque cria estoques que mascaram esperas, defeitos, transportes e outros Mudas."},
+  {ok:"✅ Correto! Gemba é o 'chão de fábrica' — onde o valor é criado e onde os problemas devem ser observados pessoalmente.",
+   err:"❌ Incorreto. Gemba significa o local de trabalho real. O Lean exige que se vá ao Gemba observar os problemas com os próprios olhos."},
+  {ok:"✅ Correto! Padronizar (SOP), treinar e medir garantem a sustentabilidade de qualquer melhoria Lean no tempo.",
+   err:"❌ Incorreto. Sem padronização (SOP atualizado), treinamento e indicadores, qualquer melhoria é temporária — o processo retorna ao estado anterior."}
+];
+
+// Wire up option clicks
+document.querySelectorAll('.quiz-card').forEach((card, i) => {
+  card.querySelectorAll('.q-opt').forEach(opt => {
+    opt.addEventListener('click', () => selectOpt(i + 1, parseInt(opt.dataset.idx)));
+  });
+});
+
+function selectOpt(qNum, idx) {
+  if (answered[qNum]) return;
+  answered[qNum] = true;
+
+  const card    = document.querySelectorAll('.quiz-card')[qNum - 1];
+  const correct = parseInt(card.dataset.answer);
+  const opts    = card.querySelectorAll('.q-opt');
+  const fb      = card.querySelector('.q-feedback');
+  const btn     = document.getElementById('btn-' + qNum);
+  const isRight = idx === correct;
+
+  if (isRight) score++;
+
+  opts.forEach((o, i) => {
+    o.classList.add('disabled');
+    if (i === correct)          o.classList.add('correct');
+    else if (i === idx && !isRight) o.classList.add('wrong');
+  });
+
+  const t = FB[qNum - 1];
+  fb.innerHTML = isRight ? t.ok
+    : `${t.err}<br><small style="display:block;margin-top:5px;opacity:.8">A resposta correta era a alternativa <strong>${String.fromCharCode(65+correct)}</strong>.</small>`;
+  fb.classList.add('show', isRight ? 'ok' : 'err');
+  btn.disabled = false;
+
+  // progress
+  const done  = answered.filter(Boolean).length;
+  const pct   = Math.round((done / TOTAL) * 100);
+  document.getElementById('progress-fill').style.width  = pct + '%';
+  document.getElementById('progress-pct').textContent   = pct + '%';
+  document.getElementById('progress-label').textContent =
+    qNum < TOTAL ? `Questão ${qNum + 1} de ${TOTAL}` : 'Todas respondidas!';
+}
+
+function nextQ(qNum) {
+  if (!answered[qNum]) return;
+  document.querySelectorAll('.quiz-card')[qNum - 1].classList.remove('active');
+  const next = document.querySelectorAll('.quiz-card')[qNum];
+  if (next) {
+    next.classList.add('active');
+    setTimeout(() => next.scrollIntoView({ behavior: 'smooth', block: 'start' }), 80);
+  }
+}
+
+function finishQuiz() {
+  if (!answered[TOTAL]) return;
+  document.getElementById('quiz-container').style.display = 'none';
+  document.querySelector('.q-progress-wrap').style.display = 'none';
+  document.querySelector('.quiz-header').style.display = 'none';
+
+  // Show conclusion
+  const concl = document.getElementById('conclusion-section');
+  concl.style.display = 'block';
+  setTimeout(() => concl.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+
+  buildConclusion();
+  launchConfetti();
+}
+
+/* ═══════════════════════════════
+   CONCLUSION BUILDER
+═══════════════════════════════ */
+function buildConclusion() {
+  const pct = Math.round((score / TOTAL) * 100);
+
+  // score
+  const bigEl = document.getElementById('score-big');
+  bigEl.textContent = '0';
+  animateCount(bigEl, score, 900);
+
+  // title & message
+  let title, msg, badges, icon;
+  if (score === 10) {
+    icon   = '🥇';
+    title  = 'Perfeito!<br>Domínio Total! 🎉';
+    msg    = 'Você acertou todas as 10 questões. Seu conhecimento sobre Gestão Lean está no nível de quem está pronto para liderar melhorias na Biolab & CO. — parabéns!';
+    badges = ['🏆 Pontuação Máxima', '⚡ Lean Expert', '🎯 100% Preciso'];
+  } else if (score >= 8) {
+    icon   = '🏆';
+    title  = 'Excelente!<br>Ótimo Resultado! 🌟';
+    msg    = 'Você demonstrou forte domínio dos princípios Lean. Revise os pontos em que errou e aprofunde-se nas ferramentas práticas — você está muito perto do topo!';
+    badges = ['🥈 Alta Performance', '💡 Lean Aware', '📈 Acima da Média'];
+  } else if (score >= 6) {
+    icon   = '👍';
+    title  = 'Muito Bem!<br>Bom Desempenho! 💪';
+    msg    = 'Você entendeu os fundamentos. Releia os Módulos 03, 05 e 06 para consolidar o aprendizado sobre desperdícios e ferramentas — você está no caminho certo!';
+    badges = ['✅ Fundamentos OK', '📚 Em Evolução'];
+  } else {
+    icon   = '🔄';
+    title  = 'Continue<br>Praticando! 📖';
+    msg    = 'Não se preocupe — o Lean é uma jornada contínua. Releia o guia com calma, especialmente os Módulos 01, 03 e 05, e tente novamente. Você vai chegar lá!';
+    badges = ['🌱 Iniciando', '📖 Revisar Conteúdo'];
+  }
+
+  document.getElementById('trophy-icon').textContent = icon;
+  document.getElementById('concl-title').innerHTML   = title;
+  document.getElementById('concl-msg').textContent   = msg;
+
+  const badgesRow = document.getElementById('badges-row');
+  badgesRow.innerHTML = badges.map(b =>
+    `<div class="ach-badge"><div class="dot"></div>${b}</div>`
+  ).join('');
+
+  // progress bar inside score-reveal
+  const sr = document.getElementById('score-reveal');
+  sr.style.animation = 'popIn .5s .3s ease both';
+}
+
+function animateCount(el, target, duration) {
+  const start = Date.now();
+  const tick  = () => {
+    const t = Math.min((Date.now() - start) / duration, 1);
+    el.textContent = Math.round(t * target);
+    if (t < 1) requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+}
+
+/* ═══════════════════════════════
+   CONFETTI
+═══════════════════════════════ */
+function launchConfetti() {
+  const canvas = document.getElementById('confetti-canvas');
+  const ctx    = canvas.getContext('2d');
+  const W      = canvas.offsetWidth;
+  const H      = canvas.offsetHeight;
+  canvas.width  = W;
+  canvas.height = H;
+
+  const colors = ['#00c8d7','#60a5fa','#34d399','#fbbf24','#f472b6','#a78bfa','#ffffff'];
+  const pieces = Array.from({length: 90}, () => ({
+    x:   Math.random() * W,
+    y:   Math.random() * -H * .6,
+    r:   Math.random() * 5 + 2,
+    d:   Math.random() * 90,
+    color: colors[Math.floor(Math.random() * colors.length)],
+    tilt: Math.random() * 10 - 5,
+    tiltAngle: 0,
+    tiltSpeed: Math.random() * .08 + .02,
+    speed: Math.random() * 2.5 + 1,
+    angle: Math.random() * Math.PI * 2,
+  }));
+
+  let frame = 0;
+  const MAX_FRAMES = 180;
+
+  (function draw() {
+    ctx.clearRect(0, 0, W, H);
+    pieces.forEach(p => {
+      ctx.save();
+      ctx.translate(p.x + p.tilt, p.y);
+      ctx.rotate(p.angle);
+      ctx.beginPath();
+      ctx.rect(-p.r, -p.r / 2, p.r * 2, p.r);
+      ctx.fillStyle = p.color;
+      ctx.globalAlpha = frame < MAX_FRAMES ? 1 : Math.max(0, 1 - (frame - MAX_FRAMES) / 40);
+      ctx.fill();
+      ctx.restore();
+
+      p.y       += p.speed;
+      p.angle   += .04;
+      p.tiltAngle += p.tiltSpeed;
+      p.tilt     = Math.sin(p.tiltAngle) * 8;
+
+      if (p.y > H) {
+        p.y = -10;
+        p.x = Math.random() * W;
+      }
+    });
+    frame++;
+    if (frame < MAX_FRAMES + 40) requestAnimationFrame(draw);
+  })();
+}
+
+/* ═══════════════════════════════
+   RETRY
+═══════════════════════════════ */
+function retryQuiz() {
+  score = 0;
+  answered = new Array(TOTAL + 1).fill(false);
+
+  document.querySelectorAll('.quiz-card').forEach((card, i) => {
+    card.classList.toggle('active', i === 0);
+    card.querySelectorAll('.q-opt').forEach(o => o.classList.remove('correct','wrong','disabled'));
+    const fb = card.querySelector('.q-feedback');
+    fb.classList.remove('show','ok','err'); fb.innerHTML = '';
+    const btn = card.querySelector('.q-btn');
+    if (btn) btn.disabled = true;
+  });
+
+  document.getElementById('progress-fill').style.width = '0%';
+  document.getElementById('progress-pct').textContent  = '0%';
+  document.getElementById('progress-label').textContent = 'Questão 1 de 10';
+
+  // restore quiz UI
+  document.getElementById('quiz-container').style.display     = 'flex';
+  document.querySelector('.q-progress-wrap').style.display    = '';
+  document.querySelector('.quiz-header').style.display        = '';
+
+  // hide conclusion
+  document.getElementById('conclusion-section').style.display = 'none';
+
+  document.querySelector('.quiz-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+</script>
+</body>
+</html>
